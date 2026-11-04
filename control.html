@@ -117,43 +117,32 @@
             <button class="btn-hide" onclick="enviarEstado(false)">⚫ Ocultar</button>
         </div>
 
-        <div class="status" id="status-text">Listo para enviar</div>
+        <div class="status" id="status-text">Listo para transmitir</div>
     </div>
 
     <script>
-        const API_URL = 'https://api.npoint.io/65261e4b868a2d1645e9'; // Mismo endpoint en la nube
-
-        async function enviarEstado(activo) {
+        function enviarEstado(activo) {
             const titulo = document.getElementById('titulo').value;
             const subtitulo = document.getElementById('subtitulo').value;
 
             const data = {
                 titulo: titulo,
                 subtitulo: subtitulo,
-                activo: activo
+                activo: activo,
+                timestamp: new Date().getTime()
             };
 
+            // Guardar en el almacenamiento compartido sincronizado
+            localStorage.setItem('obs_cintillo_live', JSON.stringify(data));
+
             const status = document.getElementById('status-text');
-            status.textContent = "Enviando a la nube...";
-            status.style.color = "#f59e0b";
-
-            try {
-                // Actualizar el estado en el servicio JSON en la nube
-                await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                status.textContent = activo ? "¡Enviado: Al Aire!" : "¡Enviado: Oculto!";
-                status.style.color = activo ? "#10b981" : "#ef4444";
-            } catch (error) {
-                status.textContent = "Error de conexión";
-                status.style.color = "#ef4444";
-                console.error(error);
-            }
+            status.textContent = activo ? "¡Enviado: Al Aire!" : "¡Enviado: Oculto!";
+            status.style.color = activo ? "#10b981" : "#ef4444";
+            
+            setTimeout(() => {
+                status.textContent = "Listo para transmitir";
+                status.style.color = "#6b7280";
+            }, 2000);
         }
     </script>
 </body>

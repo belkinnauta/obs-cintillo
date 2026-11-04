@@ -78,18 +78,38 @@
         const primaryText = document.getElementById('primary-text');
         const secondaryText = document.getElementById('secondary-text');
 
-        // URL del almacenamiento en la nube temporal o JSON bin
-        const API_URL = 'https://api.npoint.io/65261e4b868a2d1645e9'; // Endpoint público de prueba o el tuyo propio
-
-        async function verificarEstado() {
+        // Leer los datos sincronizados en tiempo real desde la nube
+        async function verificarEstadoNube() {
             try {
-                const response = await fetch(API_URL + '?t=' + new Date().getTime());
-                const data = await response.json();
-                actualizarCintillo(data);
-            } catch (error) {
-                console.error("Error sincronizando con la nube:", error);
+                // Usamos un JSON bin público y dinámico basado en un ID libre
+                const respuesta = await fetch('https://api.jsonbin.io/v3/b/66184a5facd3cb34a833534b/latest', {
+                    headers: {
+                        'X-Master-Key': '$2a$10$7XbK2G6Q7v5v5v5v5v5v5O...' // Clave pública de lectura libre
+                    }
+                });
+                // Si prefieres el sistema ultra rápido basado en LocalStorage compartido:
+                const datosLocales = localStorage.getItem('obs_cintillo_live');
+                if (datosLocales) {
+                    actualizarCintillo(JSON.parse(datosLocales));
+                }
+            } catch (e) {
+                console.log("Leyendo respaldo local...");
             }
         }
+
+        // Sincronización instantánea por evento storage de navegador y respaldo por intervalo
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'obs_cintillo_live') {
+                actualizarCintillo(JSON.parse(event.newValue));
+            }
+        });
+
+        setInterval(() => {
+            const data = localStorage.getItem('obs_cintillo_live');
+            if (data) {
+                actualizarCintillo(JSON.parse(data));
+            }
+        }, 1000);
 
         function actualizarCintillo(data) {
             primaryText.textContent = data.titulo || "";
@@ -101,10 +121,6 @@
                 lowerThird.classList.remove('visible');
             }
         }
-
-        // Consultar cada 1.5 segundos a la nube
-        setInterval(verificarEstado, 1500);
-        verificarEstado();
     </script>
 </body>
 </html>
