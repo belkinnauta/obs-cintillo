@@ -83,6 +83,11 @@
             color: #9ca3af;
             min-height: 14px;
         }
+        .file-note {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #9ca3af;
+        }
         @media (max-width: 360px) {
             body { padding: 12px; }
             .container { padding: 18px; }
@@ -102,6 +107,12 @@
             <label for="subtitulo">Texto Secundario / Cargo</label>
             <input type="text" id="subtitulo" maxlength="120" placeholder="Ej. Conductor Titular">
         </div>
+        <div class="form-group">
+            <label for="bg-url">URL de fondo / imagen PNG</label>
+            <input type="url" id="bg-url" placeholder="https://.../cintillo.png">
+            <div class="file-note">O carga un PNG local y se guardará como dato temporal del navegador.</div>
+            <input type="file" id="bg-file" accept="image/png,image/jpeg,image/webp" style="margin-top:10px;">
+        </div>
         <div class="button-group">
             <button class="btn-show" id="show-button" type="button">🔴 Al Aire</button>
             <button class="btn-hide" id="hide-button" type="button">⚫ Ocultar</button>
@@ -116,6 +127,8 @@
         const syncElement = document.getElementById('sync-text');
         const showButton = document.getElementById('show-button');
         const hideButton = document.getElementById('hide-button');
+        const bgUrlInput = document.getElementById('bg-url');
+        const bgFileInput = document.getElementById('bg-file');
         let isBusy = false;
 
         function setStatus(message, color = '#6b7280') {
@@ -135,6 +148,24 @@
             hideButton.disabled = busy;
         }
 
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error('No se pudo leer la imagen'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function getCurrentPayload() {
+            return {
+                titulo: document.getElementById('titulo').value.trim(),
+                subtitulo: document.getElementById('subtitulo').value.trim(),
+                bgImage: (bgUrlInput.value || '').trim(),
+                activo: false
+            };
+        }
+
         async function cargarEstadoActual() {
             setStatus('Conectando con la nube…', '#f59e0b');
             try {
@@ -148,6 +179,7 @@
                 }
                 document.getElementById('titulo').value = typeof data.titulo === 'string' ? data.titulo : '';
                 document.getElementById('subtitulo').value = typeof data.subtitulo === 'string' ? data.subtitulo : '';
+                bgUrlInput.value = typeof data.bgImage === 'string' ? data.bgImage : '';
                 markSynced();
                 setStatus(data.activo === true ? 'Estado actual: Al Aire' : 'Estado actual: Oculto', data.activo === true ? '#10b981' : '#9ca3af');
             } catch (error) {
@@ -158,11 +190,8 @@
 
         async function enviarEstado(activo) {
             if (isBusy) return;
-            const data = {
-                titulo: document.getElementById('titulo').value.trim(),
-                subtitulo: document.getElementById('subtitulo').value.trim(),
-                activo
-            };
+            const data = getCurrentPayload();
+            data.activo = activo;
             setBusy(true);
             setStatus('Enviando a la nube…', '#f59e0b');
             try {
@@ -182,6 +211,20 @@
                 setBusy(false);
             }
         }
+
+        bgFileInput.addEventListener('change', async (event) => {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            try {
+                setStatus('Cargando imagen…', '#f59e0b');
+                const dataUrl = await readFileAsDataURL(file);
+                bgUrlInput.value = dataUrl;
+                setStatus('Imagen cargada, lista para enviar.', '#93c5fd');
+            } catch (error) {
+                console.error('Error cargando imagen:', error);
+                setStatus('No se pudo cargar la imagen', '#ef4444');
+            }
+        });
 
         showButton.addEventListener('click', () => enviarEstado(true));
         hideButton.addEventListener('click', () => enviarEstado(false));
