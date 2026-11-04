@@ -43,10 +43,9 @@
             justify-content: center;
         }
         #primary-text {
+            display: block;
             max-width: 100%;
-            white-space: normal;
-            overflow: visible;
-            overflow-wrap: anywhere;
+            white-space: nowrap;
             color: #fff;
             font-size: 50px;
             line-height: 1.08;
@@ -56,10 +55,10 @@
             text-shadow: 0 2px 12px rgba(0, 0, 0, .25);
         }
         #secondary-text {
-            max-width: 100%;
+            display: block;
+            width: min(100%, 850px);
             white-space: normal;
-            overflow: visible;
-            overflow-wrap: anywhere;
+            overflow-wrap: break-word;
             margin-top: 6px;
             color: #bfdbfe;
             font-size: 27px;
@@ -71,15 +70,15 @@
             #lower-third { left: 40px; bottom: 40px; max-width: calc(100vw - 80px); }
             .accent-bar { flex-basis: 8px; }
             .text-content { padding: 14px 24px 16px; }
-            #primary-text { font-size: clamp(32px, 5vw, 44px); }
-            #secondary-text { font-size: clamp(19px, 2.7vw, 24px); }
+            #primary-text { font-size: clamp(28px, 5vw, 44px); }
+            #secondary-text { width: min(100%, 680px); font-size: clamp(18px, 2.7vw, 24px); }
         }
         @media (max-width: 600px) {
             #lower-third { left: 20px; bottom: 20px; max-width: calc(100vw - 40px); }
             .accent-bar { flex-basis: 6px; }
             .text-content { padding: 10px 16px 12px; }
-            #primary-text { font-size: clamp(22px, 6vw, 32px); }
-            #secondary-text { margin-top: 3px; font-size: clamp(15px, 4vw, 20px); }
+            #primary-text { font-size: clamp(18px, 6vw, 32px); }
+            #secondary-text { width: min(100%, 75vw); margin-top: 3px; font-size: clamp(14px, 4vw, 20px); }
         }
         @media (prefers-reduced-motion: reduce) {
             #lower-third { transition: opacity .01ms; }
@@ -103,11 +102,29 @@
         const POLL_INTERVAL_MS = 2000;
         let isFetching = false;
 
+        function fitNameToSingleLine() {
+            // Reduce the font only when needed so long names stay complete on one line.
+            const content = primaryText.parentElement;
+            const availableWidth = content.clientWidth;
+            if (!availableWidth) return;
+
+            let fontSize = 50;
+            const minFontSize = 24;
+            primaryText.style.fontSize = fontSize + 'px';
+            while (primaryText.scrollWidth > availableWidth && fontSize > minFontSize) {
+                fontSize -= 1;
+                primaryText.style.fontSize = fontSize + 'px';
+            }
+        }
+
         function applyState(data) {
             primaryText.textContent = typeof data.titulo === 'string' ? data.titulo.trim() : '';
             secondaryText.textContent = typeof data.subtitulo === 'string' ? data.subtitulo.trim() : '';
+            fitNameToSingleLine();
             lowerThird.classList.toggle('visible', data.activo === true);
         }
+
+        window.addEventListener('resize', fitNameToSingleLine);
 
         async function verificarEstadoNube() {
             if (isFetching) return;
