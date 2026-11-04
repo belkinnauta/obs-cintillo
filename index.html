@@ -23,7 +23,7 @@
             opacity: 0;
             transition: opacity .25s ease;
         }
-        #artwork.loaded { opacity: 1; }
+        #artwork.loaded.visible { opacity: 1; }
         #lower-third {
             position: absolute;
             left: clamp(24px, 4vw, 64px);
@@ -147,8 +147,10 @@
             primaryText.textContent = typeof data.titulo === 'string' ? data.titulo.trim() : '';
             secondaryText.textContent = typeof data.subtitulo === 'string' ? data.subtitulo.trim() : '';
             setArtwork(data.bgImage);
+            const isActive = data.activo === true;
+            artwork.classList.toggle('visible', isActive);
             fitNameToSingleLine();
-            lowerThird.classList.toggle('visible', data.activo === true);
+            lowerThird.classList.toggle('visible', isActive);
         }
 
         window.addEventListener('resize', fitNameToSingleLine);
