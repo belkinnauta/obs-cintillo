@@ -77,25 +77,19 @@
         const lowerThird = document.getElementById('lower-third');
         const primaryText = document.getElementById('primary-text');
         const secondaryText = document.getElementById('secondary-text');
-        const channel = new BroadcastChannel('obs_cintillo_channel');
 
-        // Escuchar cambios por canal o almacenamiento
-        channel.onmessage = (event) => {
-            actualizarCintillo(event.data);
-        };
+        // URL del almacenamiento en la nube temporal o JSON bin
+        const API_URL = 'https://api.npoint.io/65261e4b868a2d1645e9'; // Endpoint público de prueba o el tuyo propio
 
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'cintilloState') {
-                actualizarCintillo(JSON.parse(event.newValue));
+        async function verificarEstado() {
+            try {
+                const response = await fetch(API_URL + '?t=' + new Date().getTime());
+                const data = await response.json();
+                actualizarCintillo(data);
+            } catch (error) {
+                console.error("Error sincronizando con la nube:", error);
             }
-        });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedData = localStorage.getItem('cintilloState');
-            if (savedData) {
-                actualizarCintillo(JSON.parse(savedData));
-            }
-        });
+        }
 
         function actualizarCintillo(data) {
             primaryText.textContent = data.titulo || "";
@@ -107,6 +101,10 @@
                 lowerThird.classList.remove('visible');
             }
         }
+
+        // Consultar cada 1.5 segundos a la nube
+        setInterval(verificarEstado, 1500);
+        verificarEstado();
     </script>
 </body>
 </html>

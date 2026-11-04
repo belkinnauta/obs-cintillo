@@ -117,14 +117,13 @@
             <button class="btn-hide" onclick="enviarEstado(false)">⚫ Ocultar</button>
         </div>
 
-        <div class="status" id="status-text">Sincronizado con la nube</div>
+        <div class="status" id="status-text">Listo para enviar</div>
     </div>
 
     <script>
-        // Usamos BroadcastChannel para sincronizar pestañas o dispositivos en la nube
-        const channel = new BroadcastChannel('obs_cintillo_channel');
+        const API_URL = 'https://api.npoint.io/65261e4b868a2d1645e9'; // Mismo endpoint en la nube
 
-        function enviarEstado(activo) {
+        async function enviarEstado(activo) {
             const titulo = document.getElementById('titulo').value;
             const subtitulo = document.getElementById('subtitulo').value;
 
@@ -134,18 +133,27 @@
                 activo: activo
             };
 
-            // Guardar localmente y transmitir por canal de red/pestañas
-            localStorage.setItem('cintilloState', JSON.stringify(data));
-            channel.postMessage(data);
-
             const status = document.getElementById('status-text');
-            status.textContent = activo ? "¡Enviado: Al Aire!" : "¡Enviado: Oculto!";
-            status.style.color = activo ? "#10b981" : "#ef4444";
-            
-            setTimeout(() => {
-                status.textContent = "Sincronizado con la nube";
-                status.style.color = "#6b7280";
-            }, 2000);
+            status.textContent = "Enviando a la nube...";
+            status.style.color = "#f59e0b";
+
+            try {
+                // Actualizar el estado en el servicio JSON en la nube
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                status.textContent = activo ? "¡Enviado: Al Aire!" : "¡Enviado: Oculto!";
+                status.style.color = activo ? "#10b981" : "#ef4444";
+            } catch (error) {
+                status.textContent = "Error de conexión";
+                status.style.color = "#ef4444";
+                console.error(error);
+            }
         }
     </script>
 </body>
