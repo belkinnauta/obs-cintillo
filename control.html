@@ -34,9 +34,7 @@
             padding-bottom: 12px;
             text-align: center;
         }
-        .form-group {
-            margin-bottom: 18px;
-        }
+        .form-group { margin-bottom: 18px; }
         label {
             display: block;
             font-size: 13px;
@@ -53,15 +51,8 @@
             font-size: 16px;
             box-sizing: border-box;
         }
-        input:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-        .button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 25px;
-        }
+        input:focus { outline: none; border-color: #3b82f6; }
+        .button-group { display: flex; gap: 12px; margin-top: 25px; }
         button {
             flex: 1;
             padding: 14px;
@@ -72,23 +63,12 @@
             font-size: 15px;
             transition: background 0.2s, transform 0.1s;
         }
-        button:active {
-            transform: scale(0.98);
-        }
-        .btn-show {
-            background: #10b981;
-            color: white;
-        }
-        .btn-show:hover {
-            background: #059669;
-        }
-        .btn-hide {
-            background: #ef4444;
-            color: white;
-        }
-        .btn-hide:hover {
-            background: #dc2626;
-        }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: .6; cursor: wait; }
+        .btn-show { background: #10b981; color: white; }
+        .btn-show:hover { background: #059669; }
+        .btn-hide { background: #ef4444; color: white; }
+        .btn-hide:hover { background: #dc2626; }
         .status {
             margin-top: 15px;
             text-align: center;
@@ -103,126 +83,109 @@
             color: #9ca3af;
             min-height: 14px;
         }
+        @media (max-width: 360px) {
+            body { padding: 12px; }
+            .container { padding: 18px; }
+            .button-group { gap: 8px; }
+            button { padding: 12px 8px; font-size: 14px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <main class="container">
         <h2>Control Remoto • OBS</h2>
         <div class="form-group">
             <label for="titulo">Nombre Principal</label>
-            <input type="text" id="titulo" placeholder="Ej. Carlos Mendoza">
+            <input type="text" id="titulo" maxlength="80" placeholder="Ej. Carlos Mendoza" autocomplete="name">
         </div>
         <div class="form-group">
             <label for="subtitulo">Texto Secundario / Cargo</label>
-            <input type="text" id="subtitulo" placeholder="Ej. Conductor Titular">
+            <input type="text" id="subtitulo" maxlength="120" placeholder="Ej. Conductor Titular">
         </div>
         <div class="button-group">
-            <button class="btn-show" onclick="enviarEstado(true)">🔴 Al Aire</button>
-            <button class="btn-hide" onclick="enviarEstado(false)">⚫ Ocultar</button>
+            <button class="btn-show" id="show-button" type="button">🔴 Al Aire</button>
+            <button class="btn-hide" id="hide-button" type="button">⚫ Ocultar</button>
         </div>
-        <div class="status" id="status-text">Listo para transmitir</div>
+        <div class="status" id="status-text" role="status" aria-live="polite">Cargando estado…</div>
         <div class="sync" id="sync-text">Sincronización: --:--:--</div>
-    </div>
+    </main>
 
     <script>
-        const API_URL = 'https://api.npoint.io/65261e4b868a2d1645e9';
-        let statusResetTimer = null;
+        const API_URL = 'https://api.npoint.io/2b81ca901938404ea4e7';
+        const statusElement = document.getElementById('status-text');
+        const syncElement = document.getElementById('sync-text');
+        const showButton = document.getElementById('show-button');
+        const hideButton = document.getElementById('hide-button');
+        let isBusy = false;
 
         function setStatus(message, color = '#6b7280') {
-            const status = document.getElementById('status-text');
-            status.textContent = message;
-            status.style.color = color;
+            statusElement.textContent = message;
+            statusElement.style.color = color;
         }
 
-        function setSyncText(label) {
-            const syncText = document.getElementById('sync-text');
-            syncText.textContent = 'Sincronización: ' + label;
-        }
-
-        function getTimeStamp() {
-            return new Date().toLocaleTimeString('es-MX', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
+        function markSynced() {
+            syncElement.textContent = 'Sincronización: ' + new Date().toLocaleTimeString('es-MX', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
             });
         }
 
+        function setBusy(busy) {
+            isBusy = busy;
+            showButton.disabled = busy;
+            hideButton.disabled = busy;
+        }
+
         async function cargarEstadoActual() {
+            setStatus('Conectando con la nube…', '#f59e0b');
             try {
                 const response = await fetch(API_URL + '?t=' + Date.now(), {
-                    method: 'GET',
-                    cache: 'no-store',
-                    headers: { 'Accept': 'application/json' }
+                    method: 'GET', cache: 'no-store', headers: { 'Accept': 'application/json' }
                 });
-
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-
+                if (!response.ok) throw new Error('HTTP ' + response.status);
                 const data = await response.json();
-                const titulo = typeof data?.titulo === 'string' ? data.titulo.trim() : '';
-                const subtitulo = typeof data?.subtitulo === 'string' ? data.subtitulo.trim() : '';
-
-                document.getElementById('titulo').value = titulo;
-                document.getElementById('subtitulo').value = subtitulo;
-                setSyncText(getTimeStamp());
-
-                if (data?.activo === true) {
-                    setStatus('Último estado: Al Aire', '#10b981');
-                } else if (data?.activo === false) {
-                    setStatus('Último estado: Oculto', '#ef4444');
-                } else {
-                    setStatus('Estado cargado', '#93c5fd');
+                if (!data || typeof data !== 'object' || Array.isArray(data)) {
+                    throw new Error('JSON inválido');
                 }
+                document.getElementById('titulo').value = typeof data.titulo === 'string' ? data.titulo : '';
+                document.getElementById('subtitulo').value = typeof data.subtitulo === 'string' ? data.subtitulo : '';
+                markSynced();
+                setStatus(data.activo === true ? 'Estado actual: Al Aire' : 'Estado actual: Oculto', data.activo === true ? '#10b981' : '#9ca3af');
             } catch (error) {
-                console.error('No se pudo cargar el estado actual:', error);
-                setStatus('No se pudo cargar el estado', '#ef4444');
+                console.error('No se pudo cargar el estado:', error);
+                setStatus('No se pudo cargar el estado (' + (error.message || 'error de red') + ')', '#ef4444');
             }
         }
 
         async function enviarEstado(activo) {
-            const titulo = document.getElementById('titulo').value.trim();
-            const subtitulo = document.getElementById('subtitulo').value.trim();
+            if (isBusy) return;
             const data = {
-                titulo: titulo,
-                subtitulo: subtitulo,
-                activo: activo
+                titulo: document.getElementById('titulo').value.trim(),
+                subtitulo: document.getElementById('subtitulo').value.trim(),
+                activo
             };
-
-            setStatus('Enviando a la nube...', '#f59e0b');
-
+            setBusy(true);
+            setStatus('Enviando a la nube…', '#f59e0b');
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify(data),
                     cache: 'no-store'
                 });
-
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-
-                setSyncText(getTimeStamp());
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                markSynced();
                 setStatus(activo ? '¡Enviado: Al Aire!' : '¡Enviado: Oculto!', activo ? '#10b981' : '#ef4444');
             } catch (error) {
-                console.error('Error de conexión:', error);
-                setStatus('Error de conexión', '#ef4444');
+                console.error('No se pudo enviar el estado:', error);
+                setStatus('No se pudo enviar (' + (error.message || 'error de red') + ')', '#ef4444');
+            } finally {
+                setBusy(false);
             }
-
-            if (statusResetTimer) {
-                clearTimeout(statusResetTimer);
-            }
-
-            statusResetTimer = setTimeout(() => {
-                setStatus('Listo para transmitir', '#6b7280');
-            }, 2200);
         }
 
-        window.addEventListener('DOMContentLoaded', cargarEstadoActual);
+        showButton.addEventListener('click', () => enviarEstado(true));
+        hideButton.addEventListener('click', () => enviarEstado(false));
+        cargarEstadoActual();
     </script>
 </body>
 </html>
