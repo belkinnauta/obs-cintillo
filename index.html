@@ -70,31 +70,49 @@
         const lowerThird = document.getElementById('lower-third');
         const primaryText = document.getElementById('primary-text');
         const secondaryText = document.getElementById('secondary-text');
-
-        // URL del servicio en la nube para sincronizar en tiempo real
         const API_URL = 'https://api.npoint.io/65261e4b868a2d1645e9';
+        let isFetching = false;
+
+        function applyState(data) {
+            const titulo = typeof data?.titulo === 'string' ? data.titulo.trim() : '';
+            const subtitulo = typeof data?.subtitulo === 'string' ? data.subtitulo.trim() : '';
+            const activo = Boolean(data?.activo);
+
+            primaryText.textContent = titulo || 'Nombre';
+            secondaryText.textContent = subtitulo || 'Cargo';
+            lowerThird.classList.toggle('visible', activo);
+        }
 
         async function verificarEstadoNube() {
-            try {
-                // Añadimos ?t= para evitar que el navegador guarde en caché la respuesta antigua
-                const response = await fetch(API_URL + '?t=' + Date.now());
-                const data = await response.json();
-                
-                primaryText.textContent = data.titulo || "";
-                secondaryText.textContent = data.subtitulo || "";
+            if (isFetching) return;
+            isFetching = true;
 
-                if (data.activo) {
-                    lowerThird.classList.add('visible');
-                } else {
-                    lowerThird.classList.remove('visible');
+            try {
+                const response = await fetch(API_URL + '?t=' + Date.now(), {
+                    cache: 'no-store',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
                 }
+
+                const data = await response.json();
+
+                if (!data || typeof data !== 'object') {
+                    throw new Error('Respuesta inválida de la nube');
+                }
+
+                applyState(data);
             } catch (error) {
-                console.error("Error leyendo la nube:", error);
+                console.error('Error leyendo la nube:', error);
+                // Mantener el último estado visible si ya existía; no forzar un cambio erróneo.
+            } finally {
+                isFetching = false;
+                setTimeout(verificarEstadoNube, 1500);
             }
         }
 
-        // Consultar la nube cada 1.5 segundos de forma automática
-        setInterval(verificarEstadoNube, 1500);
         verificarEstadoNube();
     </script>
 </body>
