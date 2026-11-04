@@ -5,7 +5,7 @@
     <title>Cintillo OBS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { color-scheme: dark; }
+        :root { color-scheme: dark; --name-size: 38px; --title-size: 22px; }
         * { box-sizing: border-box; }
         html, body {
             width: 100%; height: 100%; margin: 0; overflow: hidden;
@@ -43,7 +43,7 @@
             max-width: 100%;
             white-space: nowrap;
             color: #fff;
-            font-size: 50px;
+            font-size: var(--name-size);
             line-height: 1.08;
             font-weight: 800;
             letter-spacing: 1px;
@@ -56,7 +56,7 @@
             white-space: normal;
             overflow-wrap: break-word;
             color: #fff;
-            font-size: 27px;
+            font-size: var(--title-size);
             line-height: 1.2;
             font-weight: 600;
             letter-spacing: .3px;
@@ -64,13 +64,9 @@
         }
         @media (max-width: 1000px) {
             #text-overlay { max-width: 82vw; }
-            #primary-text { font-size: clamp(28px, 5vw, 44px); }
-            #secondary-text { font-size: clamp(18px, 2.7vw, 24px); }
         }
         @media (max-width: 600px) {
             #text-overlay { max-width: 88vw; }
-            #primary-text { font-size: clamp(18px, 6vw, 32px); }
-            #secondary-text { font-size: clamp(14px, 4vw, 20px); }
         }
         @media (prefers-reduced-motion: reduce) {
             #artwork, #text-overlay { transition: opacity .01ms; }
@@ -109,11 +105,10 @@
         function fitNameToSingleLine() {
             const availableWidth = Math.min(window.innerWidth * .76, window.innerWidth - textOverlay.offsetLeft - 8);
             if (availableWidth <= 0) return;
-            let fontSize = window.innerWidth <= 600 ? Math.min(32, window.innerWidth * .06) :
-                window.innerWidth <= 1000 ? Math.min(44, window.innerWidth * .05) : 50;
-            const minFontSize = window.innerWidth <= 600 ? 14 : 20;
+            const desiredSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--name-size')) || 38;
+            let fontSize = desiredSize;
             primaryText.style.fontSize = fontSize + 'px';
-            while (primaryText.scrollWidth > availableWidth && fontSize > minFontSize) {
+            while (primaryText.scrollWidth > availableWidth && fontSize > 12) {
                 fontSize -= 1;
                 primaryText.style.fontSize = fontSize + 'px';
             }
@@ -124,8 +119,12 @@
             secondaryText.textContent = typeof data.subtitulo === 'string' ? data.subtitulo.trim() : '';
             const x = Number.isFinite(Number(data.posX)) ? Math.min(95, Math.max(0, Number(data.posX))) : 20;
             const y = Number.isFinite(Number(data.posY)) ? Math.min(95, Math.max(0, Number(data.posY))) : 82;
+            const nameSize = Number.isFinite(Number(data.fontSizeNombre)) ? Math.min(80, Math.max(12, Number(data.fontSizeNombre))) : 38;
+            const titleSize = Number.isFinite(Number(data.fontSizeCargo)) ? Math.min(60, Math.max(10, Number(data.fontSizeCargo))) : 22;
             document.documentElement.style.setProperty('--text-x', x + '%');
             document.documentElement.style.setProperty('--text-y', y + '%');
+            document.documentElement.style.setProperty('--name-size', nameSize + 'px');
+            document.documentElement.style.setProperty('--title-size', titleSize + 'px');
             setArtwork(data.bgImage);
             const isActive = data.activo === true;
             artwork.classList.toggle('visible', isActive);
