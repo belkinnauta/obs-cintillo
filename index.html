@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cintillo OBS</title>
+    <style>
+        body {
+            background-color: rgba(0, 0, 0, 0);
+            margin: 0px auto;
+            overflow: hidden;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #ffffff;
+        }
+
+        #lower-third {
+            position: absolute;
+            bottom: 60px;
+            left: 60px;
+            display: flex;
+            align-items: stretch;
+            background: rgba(9, 8, 20, 0.95);
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #lower-third.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .accent-bar {
+            width: 6px;
+            background: linear-gradient(to bottom, #3b82f6, #1d4ed8);
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .text-content {
+            padding: 12px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #primary-text {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+
+        #secondary-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #93c5fd;
+            margin-top: 3px;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="lower-third">
+        <div class="accent-bar"></div>
+        <div class="text-content">
+            <span id="primary-text">Nombre</span>
+            <span id="secondary-text">Cargo</span>
+        </div>
+    </div>
+
+    <script>
+        const lowerThird = document.getElementById('lower-third');
+        const primaryText = document.getElementById('primary-text');
+        const secondaryText = document.getElementById('secondary-text');
+
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'cintilloState') {
+                const data = JSON.parse(event.newValue);
+                actualizarCintillo(data);
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedData = localStorage.getItem('cintilloState');
+            if (savedData) {
+                actualizarCintillo(JSON.parse(savedData));
+            }
+        });
+
+        function actualizarCintillo(data) {
+            primaryText.textContent = data.titulo || "";
+            secondaryText.textContent = data.subtitulo || "";
+
+            if (data.activo) {
+                lowerThird.classList.add('visible');
+            } else {
+                lowerThird.classList.remove('visible');
+            }
+        }
+    </script>
+</body>
+</html>
