@@ -77,11 +77,16 @@
         const lowerThird = document.getElementById('lower-third');
         const primaryText = document.getElementById('primary-text');
         const secondaryText = document.getElementById('secondary-text');
+        const channel = new BroadcastChannel('obs_cintillo_channel');
+
+        // Escuchar cambios por canal o almacenamiento
+        channel.onmessage = (event) => {
+            actualizarCintillo(event.data);
+        };
 
         window.addEventListener('storage', (event) => {
             if (event.key === 'cintilloState') {
-                const data = JSON.parse(event.newValue);
-                actualizarCintillo(data);
+                actualizarCintillo(JSON.parse(event.newValue));
             }
         });
 

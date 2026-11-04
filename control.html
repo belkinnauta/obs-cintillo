@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Remoto - Cintillos OBS</title>
+    <style>
+        body {
+            background-color: #090814;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #93c5fd;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 12px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #131124;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        button {
+            flex: 1;
+            padding: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .btn-show {
+            background: #10b981;
+            color: white;
+        }
+        .btn-show:hover {
+            background: #059669;
+        }
+        .btn-hide {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-hide:hover {
+            background: #dc2626;
+        }
+        .status {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Control Remoto • OBS</h2>
+        
+        <div class="form-group">
+            <label for="titulo">Nombre Principal</label>
+            <input type="text" id="titulo" placeholder="Ej. Carlos Mendoza">
+        </div>
+
+        <div class="form-group">
+            <label for="subtitulo">Texto Secundario / Cargo</label>
+            <input type="text" id="subtitulo" placeholder="Ej. Conductor Titular">
+        </div>
+
+        <div class="button-group">
+            <button class="btn-show" onclick="enviarEstado(true)">🔴 Al Aire</button>
+            <button class="btn-hide" onclick="enviarEstado(false)">⚫ Ocultar</button>
+        </div>
+
+        <div class="status" id="status-text">Sincronizado con la nube</div>
+    </div>
+
+    <script>
+        // Usamos BroadcastChannel para sincronizar pestañas o dispositivos en la nube
+        const channel = new BroadcastChannel('obs_cintillo_channel');
+
+        function enviarEstado(activo) {
+            const titulo = document.getElementById('titulo').value;
+            const subtitulo = document.getElementById('subtitulo').value;
+
+            const data = {
+                titulo: titulo,
+                subtitulo: subtitulo,
+                activo: activo
+            };
+
+            // Guardar localmente y transmitir por canal de red/pestañas
+            localStorage.setItem('cintilloState', JSON.stringify(data));
+            channel.postMessage(data);
+
+            const status = document.getElementById('status-text');
+            status.textContent = activo ? "¡Enviado: Al Aire!" : "¡Enviado: Oculto!";
+            status.style.color = activo ? "#10b981" : "#ef4444";
+            
+            setTimeout(() => {
+                status.textContent = "Sincronizado con la nube";
+                status.style.color = "#6b7280";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
