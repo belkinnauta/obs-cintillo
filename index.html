@@ -11,7 +11,6 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             color: #ffffff;
         }
-
         #lower-third {
             position: absolute;
             bottom: 60px;
@@ -22,31 +21,26 @@
             border-radius: 4px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            
             opacity: 0;
             transform: translateX(-40px);
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         #lower-third.visible {
             opacity: 1;
             transform: translateX(0);
         }
-
         .accent-bar {
             width: 6px;
             background: linear-gradient(to bottom, #3b82f6, #1d4ed8);
             border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
         }
-
         .text-content {
             padding: 12px 24px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
-
         #primary-text {
             font-size: 22px;
             font-weight: 800;
@@ -54,7 +48,6 @@
             text-transform: uppercase;
             color: #ffffff;
         }
-
         #secondary-text {
             font-size: 14px;
             font-weight: 500;
@@ -78,49 +71,31 @@
         const primaryText = document.getElementById('primary-text');
         const secondaryText = document.getElementById('secondary-text');
 
-        // Leer los datos sincronizados en tiempo real desde la nube
+        // URL del servicio en la nube para sincronizar en tiempo real
+        const API_URL = 'https://api.npoint.io/65261e4b868a2d1645e9';
+
         async function verificarEstadoNube() {
             try {
-                // Usamos un JSON bin público y dinámico basado en un ID libre
-                const respuesta = await fetch('https://api.jsonbin.io/v3/b/66184a5facd3cb34a833534b/latest', {
-                    headers: {
-                        'X-Master-Key': '$2a$10$7XbK2G6Q7v5v5v5v5v5v5O...' // Clave pública de lectura libre
-                    }
-                });
-                // Si prefieres el sistema ultra rápido basado en LocalStorage compartido:
-                const datosLocales = localStorage.getItem('obs_cintillo_live');
-                if (datosLocales) {
-                    actualizarCintillo(JSON.parse(datosLocales));
+                // Añadimos ?t= para evitar que el navegador guarde en caché la respuesta antigua
+                const response = await fetch(API_URL + '?t=' + Date.now());
+                const data = await response.json();
+                
+                primaryText.textContent = data.titulo || "";
+                secondaryText.textContent = data.subtitulo || "";
+
+                if (data.activo) {
+                    lowerThird.classList.add('visible');
+                } else {
+                    lowerThird.classList.remove('visible');
                 }
-            } catch (e) {
-                console.log("Leyendo respaldo local...");
+            } catch (error) {
+                console.error("Error leyendo la nube:", error);
             }
         }
 
-        // Sincronización instantánea por evento storage de navegador y respaldo por intervalo
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'obs_cintillo_live') {
-                actualizarCintillo(JSON.parse(event.newValue));
-            }
-        });
-
-        setInterval(() => {
-            const data = localStorage.getItem('obs_cintillo_live');
-            if (data) {
-                actualizarCintillo(JSON.parse(data));
-            }
-        }, 1000);
-
-        function actualizarCintillo(data) {
-            primaryText.textContent = data.titulo || "";
-            secondaryText.textContent = data.subtitulo || "";
-
-            if (data.activo) {
-                lowerThird.classList.add('visible');
-            } else {
-                lowerThird.classList.remove('visible');
-            }
-        }
+        // Consultar la nube cada 1.5 segundos de forma automática
+        setInterval(verificarEstadoNube, 1500);
+        verificarEstadoNube();
     </script>
 </body>
 </html>

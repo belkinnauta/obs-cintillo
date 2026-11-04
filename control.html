@@ -98,47 +98,56 @@
     </style>
 </head>
 <body>
-
     <div class="container">
         <h2>Control Remoto • OBS</h2>
-        
         <div class="form-group">
             <label for="titulo">Nombre Principal</label>
             <input type="text" id="titulo" placeholder="Ej. Carlos Mendoza">
         </div>
-
         <div class="form-group">
             <label for="subtitulo">Texto Secundario / Cargo</label>
             <input type="text" id="subtitulo" placeholder="Ej. Conductor Titular">
         </div>
-
         <div class="button-group">
             <button class="btn-show" onclick="enviarEstado(true)">🔴 Al Aire</button>
             <button class="btn-hide" onclick="enviarEstado(false)">⚫ Ocultar</button>
         </div>
-
         <div class="status" id="status-text">Listo para transmitir</div>
     </div>
 
     <script>
-        function enviarEstado(activo) {
+        const API_URL = 'https://api.npoint.io/65261e4b868a2d1645e9';
+
+        async function enviarEstado(activo) {
             const titulo = document.getElementById('titulo').value;
             const subtitulo = document.getElementById('subtitulo').value;
-
             const data = {
                 titulo: titulo,
                 subtitulo: subtitulo,
-                activo: activo,
-                timestamp: new Date().getTime()
+                activo: activo
             };
 
-            // Guardar en el almacenamiento compartido sincronizado
-            localStorage.setItem('obs_cintillo_live', JSON.stringify(data));
-
             const status = document.getElementById('status-text');
-            status.textContent = activo ? "¡Enviado: Al Aire!" : "¡Enviado: Oculto!";
-            status.style.color = activo ? "#10b981" : "#ef4444";
-            
+            status.textContent = "Enviando a la nube...";
+            status.style.color = "#f59e0b";
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                status.textContent = activo ? "¡Enviado: Al Aire!" : "¡Enviado: Oculto!";
+                status.style.color = activo ? "#10b981" : "#ef4444";
+            } catch (error) {
+                status.textContent = "Error de conexión";
+                status.style.color = "#ef4444";
+                console.error(error);
+            }
+
             setTimeout(() => {
                 status.textContent = "Listo para transmitir";
                 status.style.color = "#6b7280";
