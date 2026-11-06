@@ -1,88 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control Remoto - Cintillos OBS</title>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Control Remoto - Cintillos OBS</title>
   <style>
-    * { box-sizing: border-box; }
-    body { background:#090814; color:#fff; font-family:'Segoe UI',Tahoma,sans-serif; padding:20px; margin:0; display:flex; justify-content:center; min-height:100vh; }
-    .container { width:min(100%,480px); height:max-content; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.1); padding:22px; border-radius:12px; box-shadow:0 10px 30px #0009; }
-    h2 { margin:0 0 16px; font-size:20px; color:#93c5fd; border-bottom:1px solid #ffffff1a; padding-bottom:12px; text-align:center; }
-    h3 { margin:0 0 12px; color:#bfdbfe; font-size:15px; }
-    .form-group { margin-bottom:16px; }
-    label { display:block; font-size:13px; color:#b5b8c5; margin-bottom:6px; }
-    input:not([type=range]):not([type=file]) { width:100%; padding:11px; background:#131124; border:1px solid #ffffff33; border-radius:6px; color:white; font-size:16px; }
-    input:focus { outline:none; border-color:#3b82f6; }
-    input[type=range] { width:100%; accent-color:#60a5fa; }
-    button { padding:12px; font-weight:bold; border:0; border-radius:6px; cursor:pointer; font-size:14px; color:white; }
-    button:disabled { opacity:.6; cursor:wait; }
-    .box { padding:12px; border:1px solid #ffffff20; border-radius:8px; background:#131124b3; margin-bottom:16px; }
-    .button-group { display:flex; gap:10px; margin-top:14px; }
-    .button-group button { flex:1; }
-    .btn-show { background:#10b981; } .btn-hide { background:#ef4444; } .btn-login { background:#3b82f6; }
-    .btn-add,.btn-save { background:#37304f; border:1px solid #ffffff24; }
-    .person-card { padding:11px; background:#0d0b1c; border:1px solid #ffffff1c; border-radius:8px; margin:10px 0; }
-    .person-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
-    .person-head label { display:flex; align-items:center; gap:8px; margin:0; color:#fff; font-weight:600; }
-    .person-head input[type=checkbox] { accent-color:#10b981; width:18px; height:18px; }
-    .remove-button { background:transparent; color:#fca5a5; padding:5px 8px; }
-    .position-controls { display:grid; grid-template-columns:repeat(3,48px); grid-template-rows:repeat(2,42px); justify-content:center; gap:6px; }
-    .position-controls button { background:#27233d; font-size:19px; padding:5px; }
-    #move-up { grid-column:2; grid-row:1; } #move-left { grid-column:1; grid-row:2; } #move-down { grid-column:2; grid-row:2; } #move-right { grid-column:3; grid-row:2; }
-    .readout { text-align:center; color:#bfdbfe; font-size:12px; margin-top:8px; }
-    .hint,.file-note { margin-top:7px; color:#9ca3af; font-size:11px; line-height:1.4; }
-    .range-value { float:right; color:#bfdbfe; font-weight:600; }
-    .status,.sync { text-align:center; font-size:12px; min-height:16px; margin-top:12px; color:#9ca3af; }
-    .sync { font-size:11px; }
-    @media(max-width:360px) { body{padding:10px}.container{padding:16px}.button-group{gap:7px} }
+    *{box-sizing:border-box}body{background:#090814;color:#fff;font-family:'Segoe UI',Tahoma,sans-serif;padding:20px;margin:0;display:flex;justify-content:center;min-height:100vh}.container{width:min(100%,480px);height:max-content;background:#ffffff08;border:1px solid #ffffff1a;padding:22px;border-radius:12px;box-shadow:0 10px 30px #0009}h2{margin:0 0 16px;font-size:20px;color:#93c5fd;border-bottom:1px solid #ffffff1a;padding-bottom:12px;text-align:center}h3{margin:0 0 12px;color:#bfdbfe;font-size:15px}.form-group{margin-bottom:16px}label{display:block;font-size:13px;color:#b5b8c5;margin-bottom:6px}input:not([type=range]):not([type=file]){width:100%;padding:11px;background:#131124;border:1px solid #ffffff33;border-radius:6px;color:white;font-size:16px}input:focus{outline:none;border-color:#3b82f6}input[type=range]{width:100%;accent-color:#60a5fa}button{padding:12px;font-weight:bold;border:0;border-radius:6px;cursor:pointer;font-size:14px;color:white}button:disabled{opacity:.6;cursor:wait}.box{padding:12px;border:1px solid #ffffff20;border-radius:8px;background:#131124b3;margin-bottom:16px}.button-group{display:flex;gap:10px;margin-top:14px}.button-group button{flex:1}.btn-show{background:#10b981}.btn-hide{background:#ef4444}.btn-login{background:#3b82f6}.btn-add,.btn-save{background:#37304f;border:1px solid #ffffff24}.person-card{padding:11px;background:#0d0b1c;border:1px solid #ffffff1c;border-radius:8px;margin:10px 0}.person-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}.person-head input[type=radio]{accent-color:#10b981;width:19px;height:19px;flex:none}.person-head label{margin:0;color:#fff;font-weight:600}.remove-button{margin-left:auto;background:transparent;color:#fca5a5;padding:5px 8px}.position-controls{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,42px);justify-content:center;gap:6px}.position-controls button{background:#27233d;font-size:19px;padding:5px}#move-up{grid-column:2;grid-row:1}#move-left{grid-column:1;grid-row:2}#move-down{grid-column:2;grid-row:2}#move-right{grid-column:3;grid-row:2}.readout{text-align:center;color:#bfdbfe;font-size:12px;margin-top:8px}.hint,.file-note{margin-top:7px;color:#9ca3af;font-size:11px;line-height:1.4}.range-value{float:right;color:#bfdbfe;font-weight:600}.status,.sync{text-align:center;font-size:12px;min-height:16px;margin-top:12px;color:#9ca3af}.sync{font-size:11px}@media(max-width:360px){body{padding:10px}.container{padding:16px}.button-group{gap:7px}}
   </style>
 </head>
 <body>
 <main class="container">
   <h2>Control Remoto • OBS</h2>
-  <section class="box">
-    <h3>Inicio de sesión Supabase</h3>
-    <label for="supabase-email">Correo</label><input type="email" id="supabase-email" autocomplete="email" placeholder="usuario@dominio.com">
-    <label for="supabase-password" style="margin-top:10px">Contraseña</label><input type="password" id="supabase-password" autocomplete="current-password" placeholder="••••••••">
-    <div class="button-group"><button class="btn-login" id="login-button" type="button">Iniciar sesión</button></div>
-  </section>
-
-  <section class="box">
-    <h3>Conductor/a (se conserva)</h3>
-    <div class="person-head"><label><input type="checkbox" id="host-enabled" checked> Incluir conductor/a al aire</label></div>
-    <label for="titulo">Nombre</label><input type="text" id="titulo" maxlength="120" placeholder="Nombre del conductor/a">
-    <label for="subtitulo" style="margin-top:10px">Cargo</label><input type="text" id="subtitulo" maxlength="240" placeholder="Conductor/a">
-  </section>
-
-  <section class="box">
-    <h3>Invitados</h3>
-    <div class="hint">Activa las personas que quieras mostrar junto al conductor/a. Los cambios se guardan al pulsar «Guardar personas» o «Al Aire».</div>
-    <div id="guest-list"></div>
-    <div class="button-group"><button class="btn-add" id="add-guest" type="button">＋ Agregar invitado</button><button class="btn-save" id="save-people" type="button">Guardar personas</button></div>
-  </section>
-
-  <section class="form-group">
-    <label for="bg-url">URL de fondo / imagen PNG</label>
-    <input type="url" id="bg-url" placeholder="https://.../cintillo.png">
-    <div class="file-note">Para subir una imagen desde el móvil, selecciona el archivo. Requiere el bucket público «cintillos».</div>
-    <input type="file" id="bg-file" accept="image/png,image/jpeg,image/webp" style="margin-top:10px">
-  </section>
-
-  <section class="box">
-    <div class="form-group"><label>Tamaño del nombre <span class="range-value" id="name-size-value">38 px</span></label><input type="range" id="name-size" min="12" max="80" value="38"></div>
-    <div><label>Tamaño del cargo <span class="range-value" id="title-size-value">22 px</span></label><input type="range" id="title-size" min="10" max="60" value="22"></div>
-    <div class="hint">Los tamaños se aplican a todas las personas.</div>
-  </section>
-
-  <section class="box">
-    <h3>Posición del texto</h3>
-    <div class="position-controls"><button id="move-up" type="button" aria-label="Subir">↑</button><button id="move-left" type="button" aria-label="Izquierda">←</button><button id="move-down" type="button" aria-label="Bajar">↓</button><button id="move-right" type="button" aria-label="Derecha">→</button></div>
-    <div class="readout" id="position-readout">X: 20% · Y: 82%</div><div class="hint">Cada toque mueve 1% del lienzo OBS.</div>
-  </section>
-
-  <div class="button-group"><button class="btn-show" id="show-button" type="button">🔴 Al Aire</button><button class="btn-hide" id="hide-button" type="button">⚫ Ocultar todo</button></div>
-  <div class="status" id="status-text" role="status" aria-live="polite">Conectando…</div><div class="sync" id="sync-text">Sincronización: --:--:--</div>
+  <section class="box"><h3>Inicio de sesión Supabase</h3><label for="supabase-email">Correo</label><input type="email" id="supabase-email" autocomplete="email" placeholder="usuario@dominio.com"><label for="supabase-password" style="margin-top:10px">Contraseña</label><input type="password" id="supabase-password" autocomplete="current-password" placeholder="••••••••"><div class="button-group"><button class="btn-login" id="login-button" type="button">Iniciar sesión</button></div></section>
+  <section class="box"><h3>Conductor/a (se conserva)</h3><div class="person-card"><div class="person-head"><input type="radio" name="selected-person" id="select-host"><label for="select-host">Seleccionar conductor/a para el próximo cintillo</label></div><label for="titulo">Nombre</label><input type="text" id="titulo" maxlength="120" placeholder="Nombre del conductor/a"><label for="subtitulo" style="margin-top:10px">Cargo</label><input type="text" id="subtitulo" maxlength="240" placeholder="Conductor/a"></div></section>
+  <section class="box"><h3>Invitados guardados</h3><div class="hint">Selecciona solo a la persona que te indique quien maneja el switcher. Cada cintillo muestra una sola persona; las demás quedan guardadas.</div><div id="guest-list"></div><div class="button-group"><button class="btn-add" id="add-guest" type="button">＋ Agregar invitado</button><button class="btn-save" id="save-people" type="button">Guardar lista</button></div></section>
+  <section class="form-group"><label for="bg-url">URL de fondo / imagen PNG</label><input type="url" id="bg-url" placeholder="https://.../cintillo.png"><div class="file-note">Para subir una imagen desde el móvil, selecciona el archivo. Requiere el bucket público «cintillos».</div><input type="file" id="bg-file" accept="image/png,image/jpeg,image/webp" style="margin-top:10px"></section>
+  <section class="box"><div class="form-group"><label>Tamaño del nombre <span class="range-value" id="name-size-value">38 px</span></label><input type="range" id="name-size" min="12" max="80" value="38"></div><div><label>Tamaño del cargo <span class="range-value" id="title-size-value">22 px</span></label><input type="range" id="title-size" min="10" max="60" value="22"></div></section>
+  <section class="box"><h3>Posición del texto</h3><div class="position-controls"><button id="move-up" type="button" aria-label="Subir">↑</button><button id="move-left" type="button" aria-label="Izquierda">←</button><button id="move-down" type="button" aria-label="Bajar">↓</button><button id="move-right" type="button" aria-label="Derecha">→</button></div><div class="readout" id="position-readout">X: 20% · Y: 82%</div><div class="hint">Cada toque mueve 1% del lienzo OBS.</div></section>
+  <div class="button-group"><button class="btn-show" id="show-button" type="button">🔴 Enviar al aire</button><button class="btn-hide" id="hide-button" type="button">⚫ Ocultar cintillo</button></div><div class="status" id="status-text" role="status" aria-live="polite">Conectando…</div><div class="sync" id="sync-text">Sincronización: --:--:--</div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -90,63 +23,27 @@
   const SUPABASE_URL='https://aejpbwvqmcqcnjzugrmf.supabase.co';
   const SUPABASE_ANON_KEY='sb_publishable_IUsorXEWq5JXnZOcUy3Gsw_eEwsUN-F';
   const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)||null;
-  const $=id=>document.getElementById(id);
-  const guestList=$('guest-list');
-  let guests=[],currentX=20,currentY=82,currentActive=false,currentNameSize=38,currentTitleSize=22,isBusy=false;
-  function setStatus(message,color='#9ca3af'){ $('status-text').textContent=message;$('status-text').style.color=color; }
-  function markSynced(){ $('sync-text').textContent='Sincronización: '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}); }
-  function updateReadouts(){ $('position-readout').textContent=`X: ${currentX}% · Y: ${currentY}%`;$('name-size-value').textContent=currentNameSize+' px';$('title-size-value').textContent=currentTitleSize+' px'; }
-  function renderGuests(){
-    guestList.replaceChildren();
-    guests.forEach((guest,index)=>{
-      const card=document.createElement('div');card.className='person-card';
-      const head=document.createElement('div');head.className='person-head';
-      const enabledLabel=document.createElement('label');
-      const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=guest.activo!==false;checkbox.setAttribute('aria-label','Incluir invitado');
-      checkbox.addEventListener('change',()=>{guest.activo=checkbox.checked;});
-      enabledLabel.append(checkbox,document.createTextNode(` Mostrar invitado ${index+1}`));
-      const remove=document.createElement('button');remove.type='button';remove.className='remove-button';remove.textContent='Quitar';remove.addEventListener('click',()=>{guests=guests.filter(item=>item.id!==guest.id);renderGuests();});
-      head.append(enabledLabel,remove);
-      const nameLabel=document.createElement('label');nameLabel.textContent='Nombre';
-      const name=document.createElement('input');name.type='text';name.maxLength=120;name.placeholder='Nombre del invitado';name.value=guest.nombre||'';name.addEventListener('input',()=>guest.nombre=name.value);
-      const titleLabel=document.createElement('label');titleLabel.textContent='Cargo';titleLabel.style.marginTop='9px';
-      const title=document.createElement('input');title.type='text';title.maxLength=240;title.placeholder='Cargo o descripción';title.value=guest.cargo||'';title.addEventListener('input',()=>guest.cargo=title.value);
-      card.append(head,nameLabel,name,titleLabel,title);guestList.append(card);
-    });
-  }
-  function getPeople(){
-    const people=[{id:'conductor',tipo:'conductor',nombre:$('titulo').value.trim(),cargo:$('subtitulo').value.trim(),activo:$('host-enabled').checked}];
-    guests.forEach((g,i)=>people.push({id:g.id||`guest-${i+1}`,tipo:'invitado',nombre:(g.nombre||'').trim(),cargo:(g.cargo||'').trim(),activo:g.activo!==false}));
-    return people.filter(person=>person.nombre||person.cargo);
-  }
-  function payload(active=currentActive){return {titulo:$('titulo').value.trim(),subtitulo:$('subtitulo').value.trim(),personas:getPeople(),bgImage:$('bg-url').value.trim(),posX:currentX,posY:currentY,fontSizeNombre:currentNameSize,fontSizeCargo:currentTitleSize,activo:active};}
-  async function saveState(data,message){
-    if(isBusy)return;isBusy=true;['show-button','hide-button','save-people','add-guest'].forEach(id=>$(id).disabled=true);setStatus('Guardando en la nube…','#f59e0b');
-    try{const response=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data),cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);currentActive=data.activo===true;markSynced();setStatus(message,currentActive?'#10b981':'#93c5fd');}
-    catch(error){console.error('No se pudo guardar:',error);setStatus('No se pudo guardar ('+(error.message||'error de red')+')','#ef4444');}
-    finally{isBusy=false;['show-button','hide-button','save-people','add-guest'].forEach(id=>$(id).disabled=false);}
-  }
-  async function loadState(){
-    try{const response=await fetch(API_URL+'?t='+Date.now(),{cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw new Error('HTTP '+response.status);const data=await response.json();
-      $('titulo').value=typeof data.titulo==='string'?data.titulo:'';$('subtitulo').value=typeof data.subtitulo==='string'?data.subtitulo:'';$('bg-url').value=typeof data.bgImage==='string'?data.bgImage:'';
-      currentX=Number.isFinite(Number(data.posX))?Math.min(95,Math.max(0,Number(data.posX))):20;currentY=Number.isFinite(Number(data.posY))?Math.min(95,Math.max(0,Number(data.posY))):82;
-      currentNameSize=Number.isFinite(Number(data.fontSizeNombre))?Math.min(80,Math.max(12,Number(data.fontSizeNombre))):38;currentTitleSize=Number.isFinite(Number(data.fontSizeCargo))?Math.min(60,Math.max(10,Number(data.fontSizeCargo))):22;
-      $('name-size').value=currentNameSize;$('title-size').value=currentTitleSize;currentActive=data.activo===true;
-      if(Array.isArray(data.personas)){const host=data.personas.find(p=>p.tipo==='conductor'||p.id==='conductor');if(host)$('host-enabled').checked=host.activo!==false;guests=data.personas.filter(p=>p!==host&&p.tipo!=='conductor'&&p.id!=='conductor').map((p,i)=>({id:p.id||`guest-${i+1}`,nombre:p.nombre||'',cargo:p.cargo||'',activo:p.activo!==false}));}
-      else { $('host-enabled').checked=true; guests=[]; }
-      renderGuests();updateReadouts();markSynced();setStatus(currentActive?'Estado actual: Al Aire':'Estado actual: Oculto',currentActive?'#10b981':'#9ca3af');
-    }catch(error){console.error('No se pudo cargar:',error);setStatus('No se pudo cargar el estado. Revisa la conexión.','#ef4444');}
-  }
-  function move(dx,dy){currentX=Math.min(95,Math.max(0,currentX+dx));currentY=Math.min(95,Math.max(0,currentY+dy));updateReadouts();saveState(payload(),'Posición guardada.');}
-  $('add-guest').addEventListener('click',()=>{guests.push({id:'guest-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),nombre:'',cargo:'',activo:true});renderGuests();guestList.lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'});});
-  $('save-people').addEventListener('click',()=>saveState(payload(),'Personas guardadas. Pulsa «Al Aire» para mostrarlas.'));
-  $('show-button').addEventListener('click',()=>saveState(payload(true),'¡Al Aire! Se muestran las personas activadas.'));
-  $('hide-button').addEventListener('click',()=>saveState(payload(false),'Todo oculto; los nombres quedaron guardados.'));
+  const $=id=>document.getElementById(id),guestList=$('guest-list');
+  let guests=[],selectedPersonaId='conductor',onAirPersonaId='conductor',currentX=20,currentY=82,currentActive=false,currentNameSize=38,currentTitleSize=22,isBusy=false;
+  function setStatus(message,color='#9ca3af'){$('status-text').textContent=message;$('status-text').style.color=color}
+  function markSynced(){$('sync-text').textContent='Sincronización: '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}
+  function updateReadouts(){$('position-readout').textContent=`X: ${currentX}% · Y: ${currentY}%`;$('name-size-value').textContent=currentNameSize+' px';$('title-size-value').textContent=currentTitleSize+' px'}
+  function renderGuests(){guestList.replaceChildren();guests.forEach((guest,index)=>{const card=document.createElement('div');card.className='person-card';const head=document.createElement('div');head.className='person-head';const radio=document.createElement('input');radio.type='radio';radio.name='selected-person';radio.id='select-'+guest.id;radio.checked=selectedPersonaId===guest.id;radio.addEventListener('change',()=>{selectedPersonaId=guest.id});const label=document.createElement('label');label.htmlFor=radio.id;label.textContent=`Seleccionar invitado ${index+1} para el próximo cintillo`;head.append(radio,label);const remove=document.createElement('button');remove.type='button';remove.className='remove-button';remove.textContent='Quitar';remove.addEventListener('click',()=>{guests=guests.filter(item=>item.id!==guest.id);if(selectedPersonaId===guest.id)selectedPersonaId='conductor';renderGuests()});head.append(remove);const nameLabel=document.createElement('label');nameLabel.textContent='Nombre';const name=document.createElement('input');name.type='text';name.maxLength=120;name.placeholder='Nombre del invitado';name.value=guest.nombre||'';name.addEventListener('input',()=>guest.nombre=name.value);const titleLabel=document.createElement('label');titleLabel.textContent='Cargo';titleLabel.style.marginTop='9px';const title=document.createElement('input');title.type='text';title.maxLength=240;title.placeholder='Cargo o descripción';title.value=guest.cargo||'';title.addEventListener('input',()=>guest.cargo=title.value);card.append(head,nameLabel,name,titleLabel,title);guestList.append(card)})}
+  function people(){return [{id:'conductor',tipo:'conductor',nombre:$('titulo').value.trim(),cargo:$('subtitulo').value.trim()},...guests.map(g=>({id:g.id,tipo:'invitado',nombre:(g.nombre||'').trim(),cargo:(g.cargo||'').trim()}))]}
+  function personById(id){return people().find(p=>p.id===id)||people()[0]}
+  function payload(active=currentActive,liveId=onAirPersonaId){const live=personById(liveId);return {titulo:live?.nombre||'',subtitulo:live?.cargo||'',personas:people(),selectedPersonaId, onAirPersonaId:liveId,bgImage:$('bg-url').value.trim(),posX:currentX,posY:currentY,fontSizeNombre:currentNameSize,fontSizeCargo:currentTitleSize,activo:active}}
+  async function saveState(data,message){if(isBusy)return;isBusy=true;['show-button','hide-button','save-people','add-guest'].forEach(id=>$(id).disabled=true);setStatus('Guardando en la nube…','#f59e0b');try{const response=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data),cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);currentActive=data.activo===true;onAirPersonaId=data.onAirPersonaId||onAirPersonaId;markSynced();setStatus(message,currentActive?'#10b981':'#93c5fd')}catch(error){console.error('No se pudo guardar:',error);setStatus('No se pudo guardar ('+(error.message||'error de red')+')','#ef4444')}finally{isBusy=false;['show-button','hide-button','save-people','add-guest'].forEach(id=>$(id).disabled=false)}}
+  async function loadState(){try{const response=await fetch(API_URL+'?t='+Date.now(),{cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw new Error('HTTP '+response.status);const data=await response.json();const all=Array.isArray(data.personas)?data.personas:[];const host=all.find(p=>p.tipo==='conductor'||p.id==='conductor');$('titulo').value=host?.nombre??(typeof data.titulo==='string'?data.titulo:'');$('subtitulo').value=host?.cargo??(typeof data.subtitulo==='string'?data.subtitulo:'');guests=all.filter(p=>p!==host&&p.tipo!=='conductor'&&p.id!=='conductor').map((p,i)=>({id:p.id||'guest-'+i,nombre:p.nombre||'',cargo:p.cargo||''}));currentX=Number.isFinite(Number(data.posX))?Math.min(95,Math.max(0,Number(data.posX))):20;currentY=Number.isFinite(Number(data.posY))?Math.min(95,Math.max(0,Number(data.posY))):82;currentNameSize=Number.isFinite(Number(data.fontSizeNombre))?Math.min(80,Math.max(12,Number(data.fontSizeNombre))):38;currentTitleSize=Number.isFinite(Number(data.fontSizeCargo))?Math.min(60,Math.max(10,Number(data.fontSizeCargo))):22;$('name-size').value=currentNameSize;$('title-size').value=currentTitleSize;$('bg-url').value=typeof data.bgImage==='string'?data.bgImage:'';currentActive=data.activo===true;onAirPersonaId=data.onAirPersonaId||'conductor';selectedPersonaId=data.selectedPersonaId||onAirPersonaId;if(selectedPersonaId!=='conductor'&&!guests.some(g=>g.id===selectedPersonaId))selectedPersonaId='conductor';$('select-host').checked=selectedPersonaId==='conductor';renderGuests();updateReadouts();markSynced();const live=all.find(p=>p.id===onAirPersonaId);setStatus(currentActive?'Al aire: '+(live?.nombre||data.titulo||'persona seleccionada'):'Estado actual: Oculto',currentActive?'#10b981':'#9ca3af')}catch(error){console.error('No se pudo cargar:',error);setStatus('No se pudo cargar el estado. Revisa la conexión.','#ef4444')}}
+  function move(dx,dy){currentX=Math.min(95,Math.max(0,currentX+dx));currentY=Math.min(95,Math.max(0,currentY+dy));updateReadouts();saveState(payload(),'Posición guardada.')}
+  $('select-host').addEventListener('change',()=>{selectedPersonaId='conductor'});
+  $('add-guest').addEventListener('click',()=>{const id='guest-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);guests.push({id,nombre:'',cargo:''});selectedPersonaId=id;renderGuests();guestList.lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'})});
+  $('save-people').addEventListener('click',()=>saveState(payload(currentActive,onAirPersonaId),'Lista guardada; el cintillo actual no cambia.'));
+  $('show-button').addEventListener('click',()=>{const selected=personById(selectedPersonaId);if(!selected||(!selected.nombre&&!selected.cargo)){setStatus('Completa el nombre o cargo de la persona seleccionada.','#ef4444');return}onAirPersonaId=selectedPersonaId;saveState(payload(true,onAirPersonaId),'Al aire: '+(selected.nombre||selected.cargo))});
+  $('hide-button').addEventListener('click',()=>saveState(payload(false,onAirPersonaId),'Cintillo oculto; la lista de personas se conserva.'));
   $('move-up').addEventListener('click',()=>move(0,-1));$('move-down').addEventListener('click',()=>move(0,1));$('move-left').addEventListener('click',()=>move(-1,0));$('move-right').addEventListener('click',()=>move(1,0));
-  $('name-size').addEventListener('input',e=>{currentNameSize=Number(e.target.value);updateReadouts();});$('title-size').addEventListener('input',e=>{currentTitleSize=Number(e.target.value);updateReadouts();});
-  $('name-size').addEventListener('change',()=>saveState(payload(),'Tamaño guardado.'));$('title-size').addEventListener('change',()=>saveState(payload(),'Tamaño guardado.'));
-  $('login-button').addEventListener('click',async()=>{if(!supabaseClient){setStatus('No cargó Supabase. Recarga la página.','#ef4444');return;}const email=$('supabase-email').value.trim(),password=$('supabase-password').value;if(!email||!password){setStatus('Escribe correo y contraseña.','#ef4444');return;}try{const {error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;setStatus('Sesión de Supabase activa.','#10b981');}catch(error){console.error('Error login:',error);setStatus('No se pudo iniciar sesión. Revisa el correo y la contraseña.','#ef4444');}});
-  $('bg-file').addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;if(!supabaseClient){setStatus('Supabase no está disponible.','#ef4444');return;}try{setStatus('Subiendo imagen…','#f59e0b');const name=Date.now()+'-'+file.name.replace(/\s+/g,'-');const {data,error}=await supabaseClient.storage.from('cintillos').upload(name,file,{cacheControl:'3600',upsert:false});if(error)throw error;$('bg-url').value=`${SUPABASE_URL}/storage/v1/object/public/cintillos/${data.path}`;setStatus('Imagen subida. Pulsa «Guardar personas» o «Al Aire» para guardar la URL.','#93c5fd');}catch(error){console.error('Error de subida:',error);setStatus('No se pudo subir. Revisa bucket y permisos de cintillos.','#ef4444');}});
+  $('name-size').addEventListener('input',e=>{currentNameSize=Number(e.target.value);updateReadouts()});$('title-size').addEventListener('input',e=>{currentTitleSize=Number(e.target.value);updateReadouts()});$('name-size').addEventListener('change',()=>saveState(payload(),'Tamaño guardado.'));$('title-size').addEventListener('change',()=>saveState(payload(),'Tamaño guardado.'));
+  $('login-button').addEventListener('click',async()=>{if(!supabaseClient){setStatus('No cargó Supabase. Recarga la página.','#ef4444');return}const email=$('supabase-email').value.trim(),password=$('supabase-password').value;if(!email||!password){setStatus('Escribe correo y contraseña.','#ef4444');return}try{const {error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;setStatus('Sesión de Supabase activa.','#10b981')}catch(error){console.error('Error login:',error);setStatus('No se pudo iniciar sesión. Revisa el correo y la contraseña.','#ef4444')}});
+  $('bg-file').addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;if(!supabaseClient){setStatus('Supabase no está disponible.','#ef4444');return}try{setStatus('Subiendo imagen…','#f59e0b');const name=Date.now()+'-'+file.name.replace(/\s+/g,'-');const {data,error}=await supabaseClient.storage.from('cintillos').upload(name,file,{cacheControl:'3600',upsert:false});if(error)throw error;$('bg-url').value=`${SUPABASE_URL}/storage/v1/object/public/cintillos/${data.path}`;setStatus('Imagen subida. Guarda la lista o pulsa «Enviar al aire» para conservar la URL.','#93c5fd')}catch(error){console.error('Error de subida:',error);setStatus('No se pudo subir. Revisa bucket y permisos de cintillos.','#ef4444')}});
   loadState();
 </script>
 </body>
