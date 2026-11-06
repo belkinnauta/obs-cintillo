@@ -70,13 +70,15 @@
         .btn-show:hover { background: #059669; }
         .btn-hide { background: #ef4444; color: white; }
         .btn-hide:hover { background: #dc2626; }
-        .position-box, .font-box {
+        .btn-login { background: #3b82f6; color: white; }
+        .btn-login:hover { background: #2563eb; }
+        .position-box, .font-box, .login-box {
             padding: 12px;
             border: 1px solid rgba(255,255,255,.12);
             border-radius: 8px;
             background: rgba(19,17,36,.7);
         }
-        .position-label, .font-label { margin-bottom: 8px; color: #9ca3af; font-size: 13px; }
+        .position-label, .font-label, .login-label { margin-bottom: 8px; color: #9ca3af; font-size: 13px; }
         .position-controls {
             display: grid;
             grid-template-columns: repeat(3, 48px);
@@ -124,20 +126,35 @@
 <body>
     <main class="container">
         <h2>Control Remoto • OBS</h2>
+
+        <div class="form-group login-box">
+            <div class="login-label">Inicio de sesión Supabase</div>
+            <label for="supabase-email">Correo</label>
+            <input type="email" id="supabase-email" placeholder="usuario@dominio.com" autocomplete="email">
+            <label for="supabase-password" style="margin-top:10px;">Contraseña</label>
+            <input type="password" id="supabase-password" placeholder="••••••••" autocomplete="current-password">
+            <div class="button-group" style="margin-top:14px;">
+                <button class="btn-login" id="login-button" type="button">Iniciar sesión</button>
+            </div>
+        </div>
+
         <div class="form-group">
             <label for="titulo">Nombre Principal</label>
             <input type="text" id="titulo" maxlength="120" placeholder="Ej. Carlos Mendoza" autocomplete="name">
         </div>
+
         <div class="form-group">
             <label for="subtitulo">Texto Secundario / Cargo</label>
             <input type="text" id="subtitulo" maxlength="240" placeholder="Ej. Conductor Titular">
         </div>
+
         <div class="form-group">
             <label for="bg-url">URL de fondo / imagen PNG</label>
             <input type="url" id="bg-url" placeholder="https://.../cintillo.png">
-            <div class="file-note">O carga una imagen local. Para que OBS la reciba desde otro dispositivo, usa una URL pública.</div>
+            <div class="file-note">Para usar imágenes desde móvil, sube primero al bucket público de Supabase.</div>
             <input type="file" id="bg-file" accept="image/png,image/jpeg,image/webp" style="margin-top:10px;">
         </div>
+
         <div class="form-group font-box">
             <div class="font-label">Tamaño del nombre <span class="range-value" id="name-size-value">38 px</span></div>
             <input type="range" id="name-size" min="12" max="80" value="38" aria-label="Tamaño del nombre">
@@ -145,6 +162,7 @@
             <input type="range" id="title-size" min="10" max="60" value="22" aria-label="Tamaño del cargo">
             <div class="position-hint">Ajusta los controles y se guardarán en la nube al soltar cada deslizador.</div>
         </div>
+
         <div class="form-group position-box">
             <div class="position-label">Posición del nombre y cargo (usa las flechas)</div>
             <div class="position-controls" aria-label="Ajustar posición del texto">
@@ -156,16 +174,25 @@
             <div class="position-readout" id="position-readout">X: 20% · Y: 82%</div>
             <div class="position-hint">Cada toque mueve 1% del lienzo OBS y guarda la posición en la nube.</div>
         </div>
+
         <div class="button-group">
             <button class="btn-show" id="show-button" type="button">🔴 Al Aire</button>
             <button class="btn-hide" id="hide-button" type="button">⚫ Ocultar</button>
         </div>
+
         <div class="status" id="status-text" role="status" aria-live="polite">Cargando estado…</div>
         <div class="sync" id="sync-text">Sincronización: --:--:--</div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const API_URL = 'https://api.npoint.io/2b81ca901938404ea4e7';
+
+        const SUPABASE_URL = 'https://TU-PROYECTO.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TU_CLAVE';
+        const supabaseConfigured = !SUPABASE_URL.includes('TU-PROYECTO') && !SUPABASE_ANON_KEY.includes('TU_CLAVE');
+        const supabase = supabaseConfigured && window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
         const statusElement = document.getElementById('status-text');
         const syncElement = document.getElementById('sync-text');
         const showButton = document.getElementById('show-button');
@@ -176,6 +203,10 @@
         const positionButtons = [...document.querySelectorAll('.position-controls button')];
         const nameSizeInput = document.getElementById('name-size');
         const titleSizeInput = document.getElementById('title-size');
+        const loginButton = document.getElementById('login-button');
+        const emailInput = document.getElementById('supabase-email');
+        const passwordInput = document.getElementById('supabase-password');
+
         let isBusy = false;
         let currentX = 20;
         let currentY = 82;
@@ -291,31 +322,77 @@
             postState(getCurrentPayload(), 'Posición guardada en la nube.');
         }
 
+        async function iniciarSesionSupabase() {
+            if (!supabase) {
+                setStatus('Configura la URL y la publishable key de Supabase en el script.', '#ef4444');
+                return false;
+            }
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            if (!email || !password) {
+                setStatus('Escribe correo y contraseña de Supabase.', '#ef4444');
+                return false;
+            }
+
+            try {
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                setStatus('Sesión de Supabase activa.', '#10b981');
+                return true;
+            } catch (error) {
+                console.error('Error login Supabase:', error);
+                setStatus('No se pudo iniciar sesión en Supabase.', '#ef4444');
+                return false;
+            }
+        }
+
+        async function subirImagenSupabase(file) {
+            if (!supabase) {
+                throw new Error('Supabase no está configurado');
+            }
+
+            const safeName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
+            const { data, error } = await supabase.storage
+                .from('cintillos')
+                .upload(safeName, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) throw error;
+            return `${SUPABASE_URL}/storage/v1/object/public/cintillos/${data.path}`;
+        }
+
         nameSizeInput.addEventListener('input', () => {
             currentNameSize = Number(nameSizeInput.value);
             updateFontReadouts();
         });
+
         titleSizeInput.addEventListener('input', () => {
             currentTitleSize = Number(titleSizeInput.value);
             updateFontReadouts();
         });
+
         nameSizeInput.addEventListener('change', () => postState(getCurrentPayload(), 'Tamaño del nombre guardado.'));
         titleSizeInput.addEventListener('change', () => postState(getCurrentPayload(), 'Tamaño del cargo guardado.'));
 
         bgFileInput.addEventListener('change', async (event) => {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
-            if (!/^image\/(png|jpeg|webp)$/.test(file.type)) {
-                setStatus('Elige un archivo PNG, JPG o WebP.', '#ef4444');
-                return;
-            }
+
             try {
-                setStatus('Leyendo imagen…', '#f59e0b');
-                bgUrlInput.value = await readFileAsDataURL(file);
-                setStatus('Imagen lista. Pulsa “Al Aire” para enviarla.', '#93c5fd');
+                if (!supabase) {
+                    throw new Error('Supabase no configurado');
+                }
+
+                setStatus('Subiendo imagen a Supabase…', '#f59e0b');
+                const publicUrl = await subirImagenSupabase(file);
+                bgUrlInput.value = publicUrl;
+                setStatus('Imagen subida correctamente.', '#93c5fd');
             } catch (error) {
-                console.error('Error cargando imagen:', error);
-                setStatus('No se pudo leer la imagen.', '#ef4444');
+                console.error('Error subiendo imagen:', error);
+                setStatus('No se pudo subir la imagen. Configura Supabase primero.', '#ef4444');
             }
         });
 
@@ -325,6 +402,14 @@
         document.getElementById('move-right').addEventListener('click', () => moveText(1, 0));
         showButton.addEventListener('click', () => postState(getCurrentPayload(true), '¡Enviado: Al Aire!'));
         hideButton.addEventListener('click', () => postState(getCurrentPayload(false), '¡Enviado: Oculto!'));
+        loginButton.addEventListener('click', async () => {
+            await iniciarSesionSupabase();
+        });
+
+        if (!supabase) {
+            setStatus('Configura Supabase antes de subir imágenes. El resto del panel sigue funcionando.', '#f59e0b');
+        }
+
         cargarEstadoActual();
     </script>
 </body>
