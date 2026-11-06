@@ -188,7 +188,7 @@
     <script>
         const API_URL = 'https://api.npoint.io/2b81ca901938404ea4e7';
 
-        const SUPABASE_URL = 'https://TU-PROYECTO.supabase.co';
+        const SUPABASE_URL = 'https://aejpbwvqmcqcnjzugrmf.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TU_CLAVE';
         const supabaseConfigured = !SUPABASE_URL.includes('TU-PROYECTO') && !SUPABASE_ANON_KEY.includes('TU_CLAVE');
         const supabase = supabaseConfigured && window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -407,7 +407,7 @@
         });
 
         if (!supabase) {
-            setStatus('Configura Supabase antes de subir imágenes. El resto del panel sigue funcionando.', '#f59e0b');
+            setStatus('Configura la publishable key de Supabase antes de subir imágenes. El resto del panel sigue funcionando.', '#f59e0b');
         }
 
         cargarEstadoActual();
