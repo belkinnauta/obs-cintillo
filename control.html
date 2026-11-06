@@ -1,407 +1,153 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Remoto - Cintillos OBS</title>
-    <style>
-        body {
-            background-color: #090814;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-        .container {
-            width: min(100%, 450px);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            box-sizing: border-box;
-        }
-        h2 {
-            margin-top: 0;
-            font-size: 20px;
-            color: #93c5fd;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 12px;
-            text-align: center;
-        }
-        .form-group { margin-bottom: 18px; }
-        label {
-            display: block;
-            font-size: 13px;
-            color: #9ca3af;
-            margin-bottom: 6px;
-        }
-        input:not([type="range"]):not([type="file"]) {
-            width: 100%;
-            padding: 12px;
-            background: #131124;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        input:focus { outline: none; border-color: #3b82f6; }
-        input[type="range"] { width: 100%; accent-color: #60a5fa; }
-        button {
-            flex: 1;
-            padding: 14px;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 15px;
-            transition: background 0.2s, transform 0.1s;
-        }
-        button:active { transform: scale(0.98); }
-        button:disabled { opacity: .6; cursor: wait; }
-        .button-group { display: flex; gap: 12px; margin-top: 25px; }
-        .btn-show { background: #10b981; color: white; }
-        .btn-show:hover { background: #059669; }
-        .btn-hide { background: #ef4444; color: white; }
-        .btn-hide:hover { background: #dc2626; }
-        .btn-login { background: #3b82f6; color: white; }
-        .btn-login:hover { background: #2563eb; }
-        .position-box, .font-box, .login-box {
-            padding: 12px;
-            border: 1px solid rgba(255,255,255,.12);
-            border-radius: 8px;
-            background: rgba(19,17,36,.7);
-        }
-        .position-label, .font-label, .login-label { margin-bottom: 8px; color: #9ca3af; font-size: 13px; }
-        .position-controls {
-            display: grid;
-            grid-template-columns: repeat(3, 48px);
-            grid-template-rows: repeat(2, 42px);
-            justify-content: center;
-            gap: 6px;
-        }
-        .position-controls button {
-            flex: initial;
-            padding: 6px;
-            background: #27233d;
-            color: white;
-            font-size: 19px;
-        }
-        .position-controls button:hover { background: #3b3560; }
-        #move-up { grid-column: 2; grid-row: 1; }
-        #move-left { grid-column: 1; grid-row: 2; }
-        #move-down { grid-column: 2; grid-row: 2; }
-        #move-right { grid-column: 3; grid-row: 2; }
-        .position-readout { margin-top: 9px; text-align: center; color: #bfdbfe; font-size: 12px; }
-        .position-hint, .file-note { margin-top: 8px; font-size: 11px; color: #9ca3af; }
-        .range-value { float: right; color: #bfdbfe; font-weight: 600; }
-        .status {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 12px;
-            color: #6b7280;
-            min-height: 16px;
-        }
-        .sync {
-            margin-top: 8px;
-            text-align: center;
-            font-size: 11px;
-            color: #9ca3af;
-            min-height: 14px;
-        }
-        @media (max-width: 360px) {
-            body { padding: 12px; }
-            .container { padding: 18px; }
-            .button-group { gap: 8px; }
-            button { padding: 12px 8px; font-size: 14px; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Remoto - Cintillos OBS</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { background:#090814; color:#fff; font-family:'Segoe UI',Tahoma,sans-serif; padding:20px; margin:0; display:flex; justify-content:center; min-height:100vh; }
+    .container { width:min(100%,480px); height:max-content; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.1); padding:22px; border-radius:12px; box-shadow:0 10px 30px #0009; }
+    h2 { margin:0 0 16px; font-size:20px; color:#93c5fd; border-bottom:1px solid #ffffff1a; padding-bottom:12px; text-align:center; }
+    h3 { margin:0 0 12px; color:#bfdbfe; font-size:15px; }
+    .form-group { margin-bottom:16px; }
+    label { display:block; font-size:13px; color:#b5b8c5; margin-bottom:6px; }
+    input:not([type=range]):not([type=file]) { width:100%; padding:11px; background:#131124; border:1px solid #ffffff33; border-radius:6px; color:white; font-size:16px; }
+    input:focus { outline:none; border-color:#3b82f6; }
+    input[type=range] { width:100%; accent-color:#60a5fa; }
+    button { padding:12px; font-weight:bold; border:0; border-radius:6px; cursor:pointer; font-size:14px; color:white; }
+    button:disabled { opacity:.6; cursor:wait; }
+    .box { padding:12px; border:1px solid #ffffff20; border-radius:8px; background:#131124b3; margin-bottom:16px; }
+    .button-group { display:flex; gap:10px; margin-top:14px; }
+    .button-group button { flex:1; }
+    .btn-show { background:#10b981; } .btn-hide { background:#ef4444; } .btn-login { background:#3b82f6; }
+    .btn-add,.btn-save { background:#37304f; border:1px solid #ffffff24; }
+    .person-card { padding:11px; background:#0d0b1c; border:1px solid #ffffff1c; border-radius:8px; margin:10px 0; }
+    .person-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
+    .person-head label { display:flex; align-items:center; gap:8px; margin:0; color:#fff; font-weight:600; }
+    .person-head input[type=checkbox] { accent-color:#10b981; width:18px; height:18px; }
+    .remove-button { background:transparent; color:#fca5a5; padding:5px 8px; }
+    .position-controls { display:grid; grid-template-columns:repeat(3,48px); grid-template-rows:repeat(2,42px); justify-content:center; gap:6px; }
+    .position-controls button { background:#27233d; font-size:19px; padding:5px; }
+    #move-up { grid-column:2; grid-row:1; } #move-left { grid-column:1; grid-row:2; } #move-down { grid-column:2; grid-row:2; } #move-right { grid-column:3; grid-row:2; }
+    .readout { text-align:center; color:#bfdbfe; font-size:12px; margin-top:8px; }
+    .hint,.file-note { margin-top:7px; color:#9ca3af; font-size:11px; line-height:1.4; }
+    .range-value { float:right; color:#bfdbfe; font-weight:600; }
+    .status,.sync { text-align:center; font-size:12px; min-height:16px; margin-top:12px; color:#9ca3af; }
+    .sync { font-size:11px; }
+    @media(max-width:360px) { body{padding:10px}.container{padding:16px}.button-group{gap:7px} }
+  </style>
 </head>
 <body>
-    <main class="container">
-        <h2>Control Remoto • OBS</h2>
+<main class="container">
+  <h2>Control Remoto • OBS</h2>
+  <section class="box">
+    <h3>Inicio de sesión Supabase</h3>
+    <label for="supabase-email">Correo</label><input type="email" id="supabase-email" autocomplete="email" placeholder="usuario@dominio.com">
+    <label for="supabase-password" style="margin-top:10px">Contraseña</label><input type="password" id="supabase-password" autocomplete="current-password" placeholder="••••••••">
+    <div class="button-group"><button class="btn-login" id="login-button" type="button">Iniciar sesión</button></div>
+  </section>
 
-        <div class="form-group login-box">
-            <div class="login-label">Inicio de sesión Supabase</div>
-            <label for="supabase-email">Correo</label>
-            <input type="email" id="supabase-email" placeholder="usuario@dominio.com" autocomplete="email">
-            <label for="supabase-password" style="margin-top:10px;">Contraseña</label>
-            <input type="password" id="supabase-password" placeholder="••••••••" autocomplete="current-password">
-            <div class="button-group" style="margin-top:14px;">
-                <button class="btn-login" id="login-button" type="button">Iniciar sesión</button>
-            </div>
-        </div>
+  <section class="box">
+    <h3>Conductor/a (se conserva)</h3>
+    <div class="person-head"><label><input type="checkbox" id="host-enabled" checked> Incluir conductor/a al aire</label></div>
+    <label for="titulo">Nombre</label><input type="text" id="titulo" maxlength="120" placeholder="Nombre del conductor/a">
+    <label for="subtitulo" style="margin-top:10px">Cargo</label><input type="text" id="subtitulo" maxlength="240" placeholder="Conductor/a">
+  </section>
 
-        <div class="form-group">
-            <label for="titulo">Nombre Principal</label>
-            <input type="text" id="titulo" maxlength="120" placeholder="Ej. Carlos Mendoza" autocomplete="name">
-        </div>
+  <section class="box">
+    <h3>Invitados</h3>
+    <div class="hint">Activa las personas que quieras mostrar junto al conductor/a. Los cambios se guardan al pulsar «Guardar personas» o «Al Aire».</div>
+    <div id="guest-list"></div>
+    <div class="button-group"><button class="btn-add" id="add-guest" type="button">＋ Agregar invitado</button><button class="btn-save" id="save-people" type="button">Guardar personas</button></div>
+  </section>
 
-        <div class="form-group">
-            <label for="subtitulo">Texto Secundario / Cargo</label>
-            <input type="text" id="subtitulo" maxlength="240" placeholder="Ej. Conductor Titular">
-        </div>
+  <section class="form-group">
+    <label for="bg-url">URL de fondo / imagen PNG</label>
+    <input type="url" id="bg-url" placeholder="https://.../cintillo.png">
+    <div class="file-note">Para subir una imagen desde el móvil, selecciona el archivo. Requiere el bucket público «cintillos».</div>
+    <input type="file" id="bg-file" accept="image/png,image/jpeg,image/webp" style="margin-top:10px">
+  </section>
 
-        <div class="form-group">
-            <label for="bg-url">URL de fondo / imagen PNG</label>
-            <input type="url" id="bg-url" placeholder="https://.../cintillo.png">
-            <div class="file-note">Para usar imágenes desde móvil, sube primero al bucket público de Supabase.</div>
-            <input type="file" id="bg-file" accept="image/png,image/jpeg,image/webp" style="margin-top:10px;">
-        </div>
+  <section class="box">
+    <div class="form-group"><label>Tamaño del nombre <span class="range-value" id="name-size-value">38 px</span></label><input type="range" id="name-size" min="12" max="80" value="38"></div>
+    <div><label>Tamaño del cargo <span class="range-value" id="title-size-value">22 px</span></label><input type="range" id="title-size" min="10" max="60" value="22"></div>
+    <div class="hint">Los tamaños se aplican a todas las personas.</div>
+  </section>
 
-        <div class="form-group font-box">
-            <div class="font-label">Tamaño del nombre <span class="range-value" id="name-size-value">38 px</span></div>
-            <input type="range" id="name-size" min="12" max="80" value="38" aria-label="Tamaño del nombre">
-            <div class="font-label" style="margin-top:14px;">Tamaño del cargo <span class="range-value" id="title-size-value">22 px</span></div>
-            <input type="range" id="title-size" min="10" max="60" value="22" aria-label="Tamaño del cargo">
-            <div class="position-hint">Ajusta los controles y se guardarán en la nube al soltar cada deslizador.</div>
-        </div>
+  <section class="box">
+    <h3>Posición del texto</h3>
+    <div class="position-controls"><button id="move-up" type="button" aria-label="Subir">↑</button><button id="move-left" type="button" aria-label="Izquierda">←</button><button id="move-down" type="button" aria-label="Bajar">↓</button><button id="move-right" type="button" aria-label="Derecha">→</button></div>
+    <div class="readout" id="position-readout">X: 20% · Y: 82%</div><div class="hint">Cada toque mueve 1% del lienzo OBS.</div>
+  </section>
 
-        <div class="form-group position-box">
-            <div class="position-label">Posición del nombre y cargo (usa las flechas)</div>
-            <div class="position-controls" aria-label="Ajustar posición del texto">
-                <button id="move-up" type="button" aria-label="Subir">↑</button>
-                <button id="move-left" type="button" aria-label="Mover a la izquierda">←</button>
-                <button id="move-down" type="button" aria-label="Bajar">↓</button>
-                <button id="move-right" type="button" aria-label="Mover a la derecha">→</button>
-            </div>
-            <div class="position-readout" id="position-readout">X: 20% · Y: 82%</div>
-            <div class="position-hint">Cada toque mueve 1% del lienzo OBS y guarda la posición en la nube.</div>
-        </div>
-
-        <div class="button-group">
-            <button class="btn-show" id="show-button" type="button">🔴 Al Aire</button>
-            <button class="btn-hide" id="hide-button" type="button">⚫ Ocultar</button>
-        </div>
-
-        <div class="status" id="status-text" role="status" aria-live="polite">Cargando estado…</div>
-        <div class="sync" id="sync-text">Sincronización: --:--:--</div>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const API_URL = 'https://api.npoint.io/2b81ca901938404ea4e7';
-
-        const SUPABASE_URL = 'https://aejpbwvqmcqcnjzugrmf.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_IUsorXEWq5JXnZOcUy3Gsw_eEwsUN-F';
-        const supabaseConfigured = !SUPABASE_URL.includes('TU-PROYECTO') && !SUPABASE_ANON_KEY.includes('TU_CLAVE');
-        const supabaseClient = supabaseConfigured && window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-
-        const statusElement = document.getElementById('status-text');
-        const syncElement = document.getElementById('sync-text');
-        const showButton = document.getElementById('show-button');
-        const hideButton = document.getElementById('hide-button');
-        const bgUrlInput = document.getElementById('bg-url');
-        const bgFileInput = document.getElementById('bg-file');
-        const positionReadout = document.getElementById('position-readout');
-        const positionButtons = [...document.querySelectorAll('.position-controls button')];
-        const nameSizeInput = document.getElementById('name-size');
-        const titleSizeInput = document.getElementById('title-size');
-        const loginButton = document.getElementById('login-button');
-        const emailInput = document.getElementById('supabase-email');
-        const passwordInput = document.getElementById('supabase-password');
-
-        let isBusy = false;
-        let currentX = 20;
-        let currentY = 82;
-        let currentActive = false;
-        let currentNameSize = 38;
-        let currentTitleSize = 22;
-
-        function setStatus(message, color = '#6b7280') {
-            statusElement.textContent = message;
-            statusElement.style.color = color;
-        }
-
-        function markSynced() {
-            syncElement.textContent = 'Sincronización: ' + new Date().toLocaleTimeString('es-MX', {
-                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-            });
-        }
-
-        function setBusy(busy) {
-            isBusy = busy;
-            showButton.disabled = busy;
-            hideButton.disabled = busy;
-            positionButtons.forEach(button => button.disabled = busy);
-        }
-
-        function updatePositionReadout() {
-            positionReadout.textContent = 'X: ' + currentX + '% · Y: ' + currentY + '%';
-        }
-
-        function updateFontReadouts() {
-            document.getElementById('name-size-value').textContent = currentNameSize + ' px';
-            document.getElementById('title-size-value').textContent = currentTitleSize + ' px';
-        }
-
-        function getCurrentPayload(activo = currentActive) {
-            return {
-                titulo: document.getElementById('titulo').value.trim(),
-                subtitulo: document.getElementById('subtitulo').value.trim(),
-                bgImage: (bgUrlInput.value || '').trim(),
-                posX: currentX,
-                posY: currentY,
-                fontSizeNombre: currentNameSize,
-                fontSizeCargo: currentTitleSize,
-                activo
-            };
-        }
-
-        async function postState(data, successMessage) {
-            if (isBusy) return;
-            setBusy(true);
-            setStatus('Enviando a la nube…', '#f59e0b');
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(data),
-                    cache: 'no-store'
-                });
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                currentActive = data.activo === true;
-                markSynced();
-                setStatus(successMessage, currentActive ? '#10b981' : '#93c5fd');
-            } catch (error) {
-                console.error('No se pudo enviar el estado:', error);
-                setStatus('No se pudo enviar (' + (error.message || 'error de red') + ')', '#ef4444');
-            } finally {
-                setBusy(false);
-            }
-        }
-
-        async function cargarEstadoActual() {
-            setStatus('Conectando con la nube…', '#f59e0b');
-            try {
-                const response = await fetch(API_URL + '?t=' + Date.now(), {
-                    method: 'GET', cache: 'no-store', headers: { 'Accept': 'application/json' }
-                });
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                const data = await response.json();
-                if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('JSON inválido');
-                document.getElementById('titulo').value = typeof data.titulo === 'string' ? data.titulo : '';
-                document.getElementById('subtitulo').value = typeof data.subtitulo === 'string' ? data.subtitulo : '';
-                bgUrlInput.value = typeof data.bgImage === 'string' ? data.bgImage : '';
-                currentX = Number.isFinite(Number(data.posX)) ? Math.min(95, Math.max(0, Number(data.posX))) : 20;
-                currentY = Number.isFinite(Number(data.posY)) ? Math.min(95, Math.max(0, Number(data.posY))) : 82;
-                currentNameSize = Number.isFinite(Number(data.fontSizeNombre)) ? Math.min(80, Math.max(12, Number(data.fontSizeNombre))) : 38;
-                currentTitleSize = Number.isFinite(Number(data.fontSizeCargo)) ? Math.min(60, Math.max(10, Number(data.fontSizeCargo))) : 22;
-                nameSizeInput.value = currentNameSize;
-                titleSizeInput.value = currentTitleSize;
-                currentActive = data.activo === true;
-                updatePositionReadout();
-                updateFontReadouts();
-                markSynced();
-                setStatus(currentActive ? 'Estado actual: Al Aire' : 'Estado actual: Oculto', currentActive ? '#10b981' : '#9ca3af');
-            } catch (error) {
-                console.error('No se pudo cargar el estado:', error);
-                setStatus('No se pudo cargar el estado (' + (error.message || 'error de red') + ')', '#ef4444');
-            }
-        }
-
-        function moveText(dx, dy) {
-            currentX = Math.min(95, Math.max(0, currentX + dx));
-            currentY = Math.min(95, Math.max(0, currentY + dy));
-            updatePositionReadout();
-            postState(getCurrentPayload(), 'Posición guardada en la nube.');
-        }
-
-        async function iniciarSesionSupabase() {
-            if (!supabaseClient) {
-                setStatus('Configura la URL y la publishable key de Supabase en el script.', '#ef4444');
-                return false;
-            }
-
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-            if (!email || !password) {
-                setStatus('Escribe correo y contraseña de Supabase.', '#ef4444');
-                return false;
-            }
-
-            try {
-                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-                setStatus('Sesión de Supabase activa.', '#10b981');
-                return true;
-            } catch (error) {
-                console.error('Error login Supabase:', error);
-                setStatus('No se pudo iniciar sesión en Supabase.', '#ef4444');
-                return false;
-            }
-        }
-
-        async function subirImagenSupabase(file) {
-            if (!supabaseClient) {
-                throw new Error('Supabase no está configurado');
-            }
-
-            const safeName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
-            const { data, error } = await supabaseClient.storage
-                .from('cintillos')
-                .upload(safeName, file, {
-                    cacheControl: '3600',
-                    upsert: false
-                });
-
-            if (error) throw error;
-            return `${SUPABASE_URL}/storage/v1/object/public/cintillos/${data.path}`;
-        }
-
-        nameSizeInput.addEventListener('input', () => {
-            currentNameSize = Number(nameSizeInput.value);
-            updateFontReadouts();
-        });
-
-        titleSizeInput.addEventListener('input', () => {
-            currentTitleSize = Number(titleSizeInput.value);
-            updateFontReadouts();
-        });
-
-        nameSizeInput.addEventListener('change', () => postState(getCurrentPayload(), 'Tamaño del nombre guardado.'));
-        titleSizeInput.addEventListener('change', () => postState(getCurrentPayload(), 'Tamaño del cargo guardado.'));
-
-        bgFileInput.addEventListener('change', async (event) => {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
-
-            try {
-                if (!supabaseClient) {
-                    throw new Error('Supabase no configurado');
-                }
-
-                setStatus('Subiendo imagen a Supabase…', '#f59e0b');
-                const publicUrl = await subirImagenSupabase(file);
-                bgUrlInput.value = publicUrl;
-                setStatus('Imagen subida correctamente.', '#93c5fd');
-            } catch (error) {
-                console.error('Error subiendo imagen:', error);
-                setStatus('No se pudo subir la imagen. Configura Supabase primero.', '#ef4444');
-            }
-        });
-
-        document.getElementById('move-up').addEventListener('click', () => moveText(0, -1));
-        document.getElementById('move-down').addEventListener('click', () => moveText(0, 1));
-        document.getElementById('move-left').addEventListener('click', () => moveText(-1, 0));
-        document.getElementById('move-right').addEventListener('click', () => moveText(1, 0));
-        showButton.addEventListener('click', () => postState(getCurrentPayload(true), '¡Enviado: Al Aire!'));
-        hideButton.addEventListener('click', () => postState(getCurrentPayload(false), '¡Enviado: Oculto!'));
-        loginButton.addEventListener('click', async () => {
-            await iniciarSesionSupabase();
-        });
-
-        if (!supabaseClient) {
-            setStatus('Configura la publishable key de Supabase antes de subir imágenes. El resto del panel sigue funcionando.', '#f59e0b');
-        }
-
-        cargarEstadoActual();
-    </script>
+  <div class="button-group"><button class="btn-show" id="show-button" type="button">🔴 Al Aire</button><button class="btn-hide" id="hide-button" type="button">⚫ Ocultar todo</button></div>
+  <div class="status" id="status-text" role="status" aria-live="polite">Conectando…</div><div class="sync" id="sync-text">Sincronización: --:--:--</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const API_URL='https://api.npoint.io/2b81ca901938404ea4e7';
+  const SUPABASE_URL='https://aejpbwvqmcqcnjzugrmf.supabase.co';
+  const SUPABASE_ANON_KEY='sb_publishable_IUsorXEWq5JXnZOcUy3Gsw_eEwsUN-F';
+  const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)||null;
+  const $=id=>document.getElementById(id);
+  const guestList=$('guest-list');
+  let guests=[],currentX=20,currentY=82,currentActive=false,currentNameSize=38,currentTitleSize=22,isBusy=false;
+  function setStatus(message,color='#9ca3af'){ $('status-text').textContent=message;$('status-text').style.color=color; }
+  function markSynced(){ $('sync-text').textContent='Sincronización: '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}); }
+  function updateReadouts(){ $('position-readout').textContent=`X: ${currentX}% · Y: ${currentY}%`;$('name-size-value').textContent=currentNameSize+' px';$('title-size-value').textContent=currentTitleSize+' px'; }
+  function renderGuests(){
+    guestList.replaceChildren();
+    guests.forEach((guest,index)=>{
+      const card=document.createElement('div');card.className='person-card';
+      const head=document.createElement('div');head.className='person-head';
+      const enabledLabel=document.createElement('label');
+      const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=guest.activo!==false;checkbox.setAttribute('aria-label','Incluir invitado');
+      checkbox.addEventListener('change',()=>{guest.activo=checkbox.checked;});
+      enabledLabel.append(checkbox,document.createTextNode(` Mostrar invitado ${index+1}`));
+      const remove=document.createElement('button');remove.type='button';remove.className='remove-button';remove.textContent='Quitar';remove.addEventListener('click',()=>{guests=guests.filter(item=>item.id!==guest.id);renderGuests();});
+      head.append(enabledLabel,remove);
+      const nameLabel=document.createElement('label');nameLabel.textContent='Nombre';
+      const name=document.createElement('input');name.type='text';name.maxLength=120;name.placeholder='Nombre del invitado';name.value=guest.nombre||'';name.addEventListener('input',()=>guest.nombre=name.value);
+      const titleLabel=document.createElement('label');titleLabel.textContent='Cargo';titleLabel.style.marginTop='9px';
+      const title=document.createElement('input');title.type='text';title.maxLength=240;title.placeholder='Cargo o descripción';title.value=guest.cargo||'';title.addEventListener('input',()=>guest.cargo=title.value);
+      card.append(head,nameLabel,name,titleLabel,title);guestList.append(card);
+    });
+  }
+  function getPeople(){
+    const people=[{id:'conductor',tipo:'conductor',nombre:$('titulo').value.trim(),cargo:$('subtitulo').value.trim(),activo:$('host-enabled').checked}];
+    guests.forEach((g,i)=>people.push({id:g.id||`guest-${i+1}`,tipo:'invitado',nombre:(g.nombre||'').trim(),cargo:(g.cargo||'').trim(),activo:g.activo!==false}));
+    return people.filter(person=>person.nombre||person.cargo);
+  }
+  function payload(active=currentActive){return {titulo:$('titulo').value.trim(),subtitulo:$('subtitulo').value.trim(),personas:getPeople(),bgImage:$('bg-url').value.trim(),posX:currentX,posY:currentY,fontSizeNombre:currentNameSize,fontSizeCargo:currentTitleSize,activo:active};}
+  async function saveState(data,message){
+    if(isBusy)return;isBusy=true;['show-button','hide-button','save-people','add-guest'].forEach(id=>$(id).disabled=true);setStatus('Guardando en la nube…','#f59e0b');
+    try{const response=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data),cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);currentActive=data.activo===true;markSynced();setStatus(message,currentActive?'#10b981':'#93c5fd');}
+    catch(error){console.error('No se pudo guardar:',error);setStatus('No se pudo guardar ('+(error.message||'error de red')+')','#ef4444');}
+    finally{isBusy=false;['show-button','hide-button','save-people','add-guest'].forEach(id=>$(id).disabled=false);}
+  }
+  async function loadState(){
+    try{const response=await fetch(API_URL+'?t='+Date.now(),{cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw new Error('HTTP '+response.status);const data=await response.json();
+      $('titulo').value=typeof data.titulo==='string'?data.titulo:'';$('subtitulo').value=typeof data.subtitulo==='string'?data.subtitulo:'';$('bg-url').value=typeof data.bgImage==='string'?data.bgImage:'';
+      currentX=Number.isFinite(Number(data.posX))?Math.min(95,Math.max(0,Number(data.posX))):20;currentY=Number.isFinite(Number(data.posY))?Math.min(95,Math.max(0,Number(data.posY))):82;
+      currentNameSize=Number.isFinite(Number(data.fontSizeNombre))?Math.min(80,Math.max(12,Number(data.fontSizeNombre))):38;currentTitleSize=Number.isFinite(Number(data.fontSizeCargo))?Math.min(60,Math.max(10,Number(data.fontSizeCargo))):22;
+      $('name-size').value=currentNameSize;$('title-size').value=currentTitleSize;currentActive=data.activo===true;
+      if(Array.isArray(data.personas)){const host=data.personas.find(p=>p.tipo==='conductor'||p.id==='conductor');if(host)$('host-enabled').checked=host.activo!==false;guests=data.personas.filter(p=>p!==host&&p.tipo!=='conductor'&&p.id!=='conductor').map((p,i)=>({id:p.id||`guest-${i+1}`,nombre:p.nombre||'',cargo:p.cargo||'',activo:p.activo!==false}));}
+      else { $('host-enabled').checked=true; guests=[]; }
+      renderGuests();updateReadouts();markSynced();setStatus(currentActive?'Estado actual: Al Aire':'Estado actual: Oculto',currentActive?'#10b981':'#9ca3af');
+    }catch(error){console.error('No se pudo cargar:',error);setStatus('No se pudo cargar el estado. Revisa la conexión.','#ef4444');}
+  }
+  function move(dx,dy){currentX=Math.min(95,Math.max(0,currentX+dx));currentY=Math.min(95,Math.max(0,currentY+dy));updateReadouts();saveState(payload(),'Posición guardada.');}
+  $('add-guest').addEventListener('click',()=>{guests.push({id:'guest-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),nombre:'',cargo:'',activo:true});renderGuests();guestList.lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'});});
+  $('save-people').addEventListener('click',()=>saveState(payload(),'Personas guardadas. Pulsa «Al Aire» para mostrarlas.'));
+  $('show-button').addEventListener('click',()=>saveState(payload(true),'¡Al Aire! Se muestran las personas activadas.'));
+  $('hide-button').addEventListener('click',()=>saveState(payload(false),'Todo oculto; los nombres quedaron guardados.'));
+  $('move-up').addEventListener('click',()=>move(0,-1));$('move-down').addEventListener('click',()=>move(0,1));$('move-left').addEventListener('click',()=>move(-1,0));$('move-right').addEventListener('click',()=>move(1,0));
+  $('name-size').addEventListener('input',e=>{currentNameSize=Number(e.target.value);updateReadouts();});$('title-size').addEventListener('input',e=>{currentTitleSize=Number(e.target.value);updateReadouts();});
+  $('name-size').addEventListener('change',()=>saveState(payload(),'Tamaño guardado.'));$('title-size').addEventListener('change',()=>saveState(payload(),'Tamaño guardado.'));
+  $('login-button').addEventListener('click',async()=>{if(!supabaseClient){setStatus('No cargó Supabase. Recarga la página.','#ef4444');return;}const email=$('supabase-email').value.trim(),password=$('supabase-password').value;if(!email||!password){setStatus('Escribe correo y contraseña.','#ef4444');return;}try{const {error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;setStatus('Sesión de Supabase activa.','#10b981');}catch(error){console.error('Error login:',error);setStatus('No se pudo iniciar sesión. Revisa el correo y la contraseña.','#ef4444');}});
+  $('bg-file').addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;if(!supabaseClient){setStatus('Supabase no está disponible.','#ef4444');return;}try{setStatus('Subiendo imagen…','#f59e0b');const name=Date.now()+'-'+file.name.replace(/\s+/g,'-');const {data,error}=await supabaseClient.storage.from('cintillos').upload(name,file,{cacheControl:'3600',upsert:false});if(error)throw error;$('bg-url').value=`${SUPABASE_URL}/storage/v1/object/public/cintillos/${data.path}`;setStatus('Imagen subida. Pulsa «Guardar personas» o «Al Aire» para guardar la URL.','#93c5fd');}catch(error){console.error('Error de subida:',error);setStatus('No se pudo subir. Revisa bucket y permisos de cintillos.','#ef4444');}});
+  loadState();
+</script>
 </body>
 </html>
